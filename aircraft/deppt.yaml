@@ -1,0 +1,288 @@
+meta:
+  title: "R200 - DEPPT"
+  subtitle: "R 2120 U"
+  fold_margin_mm: 8
+
+columns:
+  - col: 1
+    sections:
+      - title: "BEFORE START"
+        type: normal
+        items:
+          - Pre-flight Inspection: COMPLETED
+          - "Pitot & Static Cover (3x)": REMOVED
+          - "Mass & Balance": CHECKED
+          - "Documents & Papers": ON BOARD
+          - Emergency Equipment: CHECKED
+          - Seat Belt: "LOCKED & FASTENED"
+          - Trim: T/O
+          - Fuel Shut-off Valve (pushed): OPEN
+          - Fuel Quant: CHECKED
+          - BATT / ALTN: "OFF"
+          - Fuel Pump Switch: "OFF"
+          - Parking Brake: SET
+          - Circuit Breakers: CHECKED
+          - Avionic Master: "OFF"
+          - DZ Headset: TURN ON
+          - SkyEcho: CHECK ON / GREEN
+          - SkyDemon: FLY
+
+      - title: "STARTING ENGINE"
+        type: normal
+        items:
+          - Canopy: CLOSED
+          - Carburetor Heat: "OFF"
+          - Mixture: FULL RICH
+          - BATT Switch: "ON"
+          - Strobe LT: "ON"
+          - PROP Area: CLEAR
+          - Fuel Pump: "ON"
+            style: blue
+          - Throttle: Inject 2-3 times
+            style: blue
+          - Throttle (appx. 2 cm): ¾" OPEN
+            style: blue
+          - Cold Start: Keep injecting → smooth RPM
+            style: blue
+          - Ignition Switch: BOTH
+          - Starter Button (max. 15 sec.): "PUSH & TURN"
+          - Throttle: 1200 RPM
+            style: blue
+          - Oil Pressure (within 20 sec): CHECKED
+            style: blue
+          - ALTN Switch: "ON"
+          - Fuel Pump: "OFF"
+          - Ampere (in the Green): CHECKED
+          - SkyDemon: LOG ENGINE START
+
+      - title: "AFTER START"
+        type: normal
+        items:
+          - Avionic Master: "ON"
+          - "COM, NAV, GNS for Departure": "ON & SET"
+          - GPS Flight Plan: AS REQUIRED
+          - Transponder: SBY / 7000
+          - Flight Controls: CHECKED
+          - Flaps: "CHECKED & UP"
+          - ALTIMETER: CHECKED
+          - TAXI LTS: AS REQUIRED
+
+      - title: "OPERATING SPEEDS [KIAS]"
+        type: speeds
+        items:
+          - Vr: 54
+          - Vfe: 97
+          - VClimb (50ft): 65
+            style: red
+          - Vx T/O Flaps: 65
+          - VA: 129
+          - Vy CRZ: 75
+          - Vno: 129
+          - V TGT Flaps T/O+LDG: 65
+          - Vne: 155
+
+  - col: 2
+    sections:
+      - title: "TAXIING"
+        type: normal
+        items:
+          - Brakes: CHECKED
+          - Turning Instr: CHECKED
+
+      - title: "RUN UP"
+        type: normal
+        items:
+          - Parking Brake: SET
+          - Canopy: CLOSED
+          - Mixture: FULL RICH
+          - Engine Instruments: CHECKED
+          - Suction: CHECKED
+          - Throttle: 1800 RPM
+            style: blue
+          - Magneto (L - both – R – both): CHECK
+            style: blue
+          - (max. Drop 175 RPM / Diff. 50 RPM):
+            style: note
+          - Carburetor Heat: CHECK
+            style: blue
+          - (min. Drop 20 / max. 200 RPM):
+            style: note
+          - Throttle: IDLE 600-650 THEN 1000 RPM
+            style: blue
+
+      - title: "BEFORE TAKE OFF"
+        type: normal
+        items:
+          - Pos.-Light: AS REQUIRED
+          - Landing Light: "ON"
+          - Ignition Switch: BOTH
+          - Flaps: (10°) SET START
+          - Mixture: FULL RICH
+          - Fuel Pump: "ON"
+          - Carburetor Heat (pushed): "OFF"
+          - Trim: NEUTRAL
+          - Transponder: ALT / 7000
+          - "T/O & Dep. EMER Briefing": COMPLETED
+          - ATC Clearance: IF REQUIRED
+          - T/O Time: NOTED
+          - Parking Brake: RELEASED
+          - — ON RWY —:
+            style: centered
+          - Gyro RWY HDG vs. TRACK: CHECKED
+
+      - title: "TAKE OFF"
+        type: normal
+        items:
+          - Throttle: FULL
+          - Check min. 2300 RPM:
+            style: warn
+          - Rotation Speed (Flaps 10°): 54 kts
+          - Rudder: AS REQUIRED
+          - Initial CLIMB: Vx 60 KIAS
+
+      - title: "AFTER TAKE OFF ( @ 400' AGL )"
+        type: normal
+        items:
+          - Landing Light: "OFF"
+          - Flaps: UP
+          - Fuel Pump: "OFF"
+          - Climb Speed: Vy 75 KIAS ESTABLISH
+
+      - title: "CRUISE"
+        type: normal
+        items:
+          - Power: 75% / 2500 RPM
+          - Mixture (not below 5000ft): LEAN
+          - Altimeter QNH / STD: SET
+          - Trim: ADJUSTED
+
+  - col: 3
+    sections:
+      - title: "APPROACH"
+        type: normal
+        items:
+          - App Briefing: COMPLETED
+          - — ABM TRESHOLD —:
+            style: centered_blue
+          - Throttle: AS REQUIRED
+          - Flaps: 10° SET
+          - Carburetor Heat: "ON"
+          - Mixture: FULL RICH
+          - ATIS (if possible): RECEIVED
+          - Altimeter QNH: SET
+          - "COM, NAV, GNs": CHECKED / SET
+          - Speed (appx): 70 KIAS ESTABLISH
+
+      - title: "FINAL"
+        type: normal
+        items:
+          - Fuel Pump: "ON"
+          - Landing Light: "ON"
+          - Carburetor Heat: "ON"
+          - Mixture: FULL RICH
+          - Flaps: 10° / 35° LDG SET
+          - Vapp: 70 / 65 KIAS
+
+      - title: "AFTER LANDING"
+        type: normal
+        items:
+          - Fuel Pump: "OFF"
+          - Landing Light: "OFF"
+          - Pos.-Lights: AS REQUIRED
+          - Flaps: UP
+          - Carburator Heat: "OFF"
+          - Transponder: SBY
+          - Landing Time: NOTED
+          - Flight Plan: CLOSED
+          - Taxi Light: AS REQUIRED
+
+      - title: "PARKING"
+        type: normal
+        items:
+          - Parking Brake: AS REQUIRED
+            style: blue
+          - Throttle: 1000 RPM
+            style: blue
+          - SkyDemon: LOG ON BLOCKS
+          - "COM, NAV, GNS": "OFF"
+            style: blue
+          - Avionic Master: "OFF"
+            style: blue
+          - Flaps: LDG
+            style: blue
+          - Mixture: PULL FULL LEAN
+            style: blue
+          - Ignition Switch (step-by-step): "OFF"
+            style: blue
+          - Strobe Lights: "OFF"
+            style: blue
+          - "ALTN & BATT": "OFF"
+            style: blue
+          - SkyDemon: LOG ENGINE STOP
+          - DZ Headset: TURN OFF
+          - SkyEcho: TURN OFF
+          - Flight Control Lock: AS REQUIRED
+
+  - col: 4
+    sections:
+      - title: "ENGINE FAILURE (AFTER TAKE OFF)"
+        type: emergency
+        items:
+          - — NOSE DOWN —:
+            style: centered
+          - Airspeed: 65 KIAS
+          - Fuel Shut-off Value: CLOSED
+          - Ignition Switch: "OFF"
+          - Flaps: AS REQUIRED
+          - BATT: ON ( Flaps ) then OFF
+
+      - title: "EMERGENCY LANDING WITH ENGINE OFF"
+        type: emergency
+        items:
+          - Airspeed (Flaps UP): 67 KIAS
+          - (LDG): 65 KIAS
+          - Fuel Shut-off Value: CLOSED
+          - Ignition Switch: "OFF"
+          - Safety Belt: FASTENED
+          - Flaps: 35° LDG
+          - Radio: TRANSMIT
+          - Master Switch (Battery): "OFF"
+
+      - title: "ENGINE FAILURE DURING FLIGHT"
+        type: emergency
+        items:
+          - (RESTART PROCEDURES WITH WINDMILLING):
+            style: note
+          - Airspeed: 75 KIAS
+          - Fuel Shut-off Value: OPEN
+          - Ignition Switch: BOTH
+          - Fuel Pump: "ON"
+          - Throttle (approx. 2cm): FORWARD
+          - "If engine does not start within 10 seconds:":
+            style: note
+          - PREPARE FOR FORCED LANDING:
+            style: warn
+
+      - title: "ENGINE FIRE (DURING FLIGHT)"
+        type: emergency
+        items:
+          - Fuel Shut-off Value: CLOSED
+          - Airspeed: 86 KIAS
+          - Throttle: FULL FORWARD
+          - Mixture: FULL LEAN
+          - Fuel Pump: "OFF"
+          - ALTN: "OFF"
+          - "Cabin Heat & Vent": "OFF"
+          - Perform emergency landing with engine:
+            style: warn
+
+      - title: "ELECTRICAL FIRE (DURING FLIGHT)"
+        type: emergency
+        items:
+          - BATT: "OFF"
+          - ALTN: "OFF"
+          - Cabin Vent: REDUCE
+          - Circuit Breakers: "OFF"
+          - ALTN CB: "OFF"
+          - Land ASAP:
+            style: warn
