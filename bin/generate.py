@@ -194,7 +194,7 @@ NOTE_LEAD  = SIZE_NOTE * 0.35278 * 1.55 * mm
 SEC_GAP    = 2.0 * mm                           # vertical gap between sections
 
 # ── Colors ────────────────────────────────────────────────────────────────────
-COL_HEADER_BG = colors.HexColor("#1F3864")
+COL_HEADER_BG = colors.black          # normal sections: white text on black
 COL_EMERG_BG  = colors.HexColor("#C00000")
 COL_HEADER_FG = colors.white
 COL_BLUE      = colors.HexColor("#2F5496")
@@ -282,8 +282,22 @@ def draw_dot_leader(cx, text_y, label, callout,
 def render_section(section, cx, cy, col_width):
     sec_type = section.get("type", "normal")
     title    = section["title"]
+    items    = section.get("items", [])
 
-    # Header bar (fixed height)
+    # ---- Pre-calculate total section height for the border rect ----
+    body_h = len(items) * ITEM_LEAD  # rough estimate; notes are slightly shorter
+    for item in items:
+        if item.get("style") == "note":
+            body_h += NOTE_LEAD - ITEM_LEAD   # note rows are shorter
+    total_h = HDR_BAR_H + 0.5 * mm + body_h
+
+    # ---- Outer border around the entire section ----
+    BORDER_W = 0.4
+    c.setStrokeColor(COL_HEADER_BG if sec_type != "emergency" else COL_EMERG_BG)
+    c.setLineWidth(BORDER_W)
+    c.rect(cx, cy - total_h, col_width, total_h, fill=0, stroke=1)
+
+    # ---- Header bar (filled, no stroke — border already drawn above) ----
     c.setFillColor(COL_EMERG_BG if sec_type == "emergency" else COL_HEADER_BG)
     c.rect(cx, cy - HDR_BAR_H, col_width, HDR_BAR_H, fill=1, stroke=0)
     c.setFillColor(COL_HEADER_FG)
@@ -292,7 +306,7 @@ def render_section(section, cx, cy, col_width):
     c.drawString(cx + CELL_PAD_X, text_y, title)
     cy -= HDR_BAR_H + 0.5 * mm
 
-    for item in section.get("items", []):
+    for item in items:
         cy = render_item(item, cx, cy, col_width)
 
     return cy - SEC_GAP
@@ -348,11 +362,6 @@ TITLE_BAR_H = 7 * mm
 Y_START     = PAGE_H - OUTER_MARGIN - TITLE_BAR_H - 1 * mm
 
 draw_title_bar()
-draw_col_dividers(
-    y_top    = PAGE_H - OUTER_MARGIN,
-    y_bottom = OUTER_MARGIN
-)
-
 for col_data in data["columns"]:
     ci = col_data["col"]
     cx = col_x(ci)
