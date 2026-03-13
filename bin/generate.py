@@ -1,31 +1,164 @@
 #!/usr/bin/env python3
 """
 Checklist Generator – JSON → PDF
-Usage: python3 generate.py [input.json] [output.pdf]
-Default output filename = input basename + .pdf
+
+Converts a structured JSON checklist definition into a print-ready
+A4 landscape PDF with 4 columns and a centre fold margin.
+
+Dependencies:
+    pip install reportlab
+
+Font notes:
+    Uses Arial via Liberation Sans (metrically identical, ships with most
+    Linux distros). Falls back to Helvetica if TTF files are not found.
+    To use actual Arial, place Arial.ttf / Arial Bold.ttf / etc. in the
+    same directory as this script and set FONT_DIR below.
 """
 
 import sys
-import json
 import os
+import json
+import argparse
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import mm
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
-input_file  = sys.argv[1] if len(sys.argv) > 1 else "checklist-data.json"
-output_file = sys.argv[2] if len(sys.argv) > 2 else os.path.splitext(input_file)[0] + ".pdf"
+parser = argparse.ArgumentParser(
+    prog="generate.py",
+    description="Convert a JSON checklist definition to a print-ready A4 landscape PDF.",
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    epilog="""
+examples:
+  python3 generate.py checklist-data.json
+      → writes checklist-data.pdf in the same directory
+
+  python3 generate.py checklist-data.json output/my-checklist.pdf
+      → writes to a specific output path
+
+  python3 generate.py --fold 10 checklist-data.json
+      → use a 10 mm fold margin instead of the value in the JSON
+
+json structure:
+  {
+    "meta": {
+      "title":          "CHECKLIST  D-EPPT",
+      "subtitle":       "20.11.2024  Revision 1",
+      "fold_margin_mm": 8
+    },
+    "columns": [
+      {
+        "col": 1,
+        "sections": [
+          {
+            "title": "BEFORE START",
+            "type":  "normal",          // "normal" | "emergency" | "speeds"
+            "items": [
+              { "label": "Parking Brake", "callout": "SET" },
+              { "label": "Note text",     "callout": "", "style": "note" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+
+item styles:
+  (default)       label left, callout right, dot leader between
+  blue_italic     both label and callout in blue italic (e.g. engine start steps)
+  red_bold        both in red bold
+  warn            full-width red bold italic (no callout)
+  note            small grey italic indent (no callout)
+  centered_bold   centred black bold (e.g. decision points)
+  centered_blue   centred blue bold
+
+section types:
+  normal          dark-blue header bar
+  emergency       red header bar
+  speeds          dark-blue header bar (same as normal)
+    """,
+)
+parser.add_argument(
+    "input",
+    metavar="INPUT.json",
+    help="path to the JSON checklist definition file",
+)
+parser.add_argument(
+    "output",
+    metavar="OUTPUT.pdf",
+    nargs="?",
+    help="path for the generated PDF (default: same name as INPUT with .pdf extension)",
+)
+parser.add_argument(
+    "--fold",
+    metavar="MM",
+    type=float,
+    default=None,
+    help="override fold margin in mm (default: value from JSON meta, fallback 8 mm)",
+)
+parser.add_argument(
+    "--col-gap",
+    metavar="MM",
+    type=float,
+    default=3.0,
+    help="gap between columns on the same half in mm (default: 3.0)",
+)
+parser.add_argument(
+    "--outer-margin",
+    metavar="MM",
+    type=float,
+    default=12.7,
+    help="outer page margin in mm (default: 12.7 = 0.5 inch, matching original DOCX template)",
+)
+
+args = parser.parse_args()
+
+input_file  = args.input
+output_file = args.output or os.path.splitext(input_file)[0] + ".pdf"
+
+if not os.path.isfile(input_file):
+    parser.error(f"Input file not found: {input_file}")
 
 with open(input_file, encoding="utf-8") as f:
     data = json.load(f)
 
+# ── Font registration ─────────────────────────────────────────────────────────
+# Liberation Sans is metrically identical to Arial and ships with most Linux
+# distros. Falls back to built-in Helvetica if TTF files are not found.
+_LIBERATION_PATHS = {
+    "Arial":            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+    "Arial-Bold":       "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+    "Arial-Italic":     "/usr/share/fonts/truetype/liberation/LiberationSans-Italic.ttf",
+    "Arial-BoldItalic": "/usr/share/fonts/truetype/liberation/LiberationSans-BoldItalic.ttf",
+}
+_FALLBACK = {
+    "Arial": "Helvetica", "Arial-Bold": "Helvetica-Bold",
+    "Arial-Italic": "Helvetica-Oblique", "Arial-BoldItalic": "Helvetica-BoldOblique",
+}
+_fonts_ok = all(os.path.isfile(p) for p in _LIBERATION_PATHS.values())
+if _fonts_ok:
+    for _name, _path in _LIBERATION_PATHS.items():
+        pdfmetrics.registerFont(TTFont(_name, _path))
+    print("  Font: Arial (via Liberation Sans TTF)")
+else:
+    print("  Font: Helvetica fallback (Liberation Sans TTF not found)")
+
+def _font(key):
+    return key if _fonts_ok else _FALLBACK[key]
+
+FONT_NORMAL   = _font("Arial")
+FONT_BOLD     = _font("Arial-Bold")
+FONT_ITALIC   = _font("Arial-Italic")
+FONT_BOLDITAL = _font("Arial-BoldItalic")
+
 # ── Page geometry (from original DOCX: 720 DXA = 12.7 mm margins) ────────────
-PAGE_W, PAGE_H = landscape(A4)          # 297 × 210 mm in points
-OUTER_MARGIN   = 12.7 * mm
-FOLD_MARGIN    = data["meta"].get("fold_margin_mm", 8) * mm
-COL_GAP        = 3.0 * mm              # gap between columns on same half
+PAGE_W, PAGE_H = landscape(A4)
+OUTER_MARGIN   = args.outer_margin * mm
+FOLD_MARGIN    = (args.fold if args.fold is not None else data["meta"].get("fold_margin_mm", 8)) * mm
+COL_GAP        = args.col_gap * mm     # gap between columns on same half
 
 CONTENT_W = PAGE_W - 2 * OUTER_MARGIN
 
@@ -48,10 +181,6 @@ def col_x(col_idx):
 CELL_PAD_X = 1.2 * mm
 
 # ── Typography ────────────────────────────────────────────────────────────────
-FONT_NORMAL   = "Helvetica"
-FONT_BOLD     = "Helvetica-Bold"
-FONT_ITALIC   = "Helvetica-Oblique"
-FONT_BOLDITAL = "Helvetica-BoldOblique"
 
 SIZE_HEADER   = 5.0   # section header text (pt)
 SIZE_ITEM     = 4.8   # checklist item (pt)
