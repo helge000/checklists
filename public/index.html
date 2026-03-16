@@ -303,6 +303,55 @@
   .param-table tr:last-child td { border-bottom: none; }
 
 
+
+  /* ── Visual editor ────────────────────────────────────────────── */
+  .ve-wrap { flex: 1; overflow-y: auto; background: var(--bg); padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+  .ve-halves { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ve-half-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; padding: 4px 0 6px; }
+  .ve-half-label.normal { color: var(--text); }
+  .ve-half-label.emergency { color: var(--red); }
+  .ve-col { display: flex; flex-direction: column; gap: 6px; }
+  .ve-col-header { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; padding: 2px 0; border-bottom: 1px solid var(--border); margin-bottom: 2px; display: flex; align-items: center; justify-content: space-between; }
+  .ve-section { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .ve-section-header { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-bottom: 1px solid var(--border); }
+  .ve-section-header.emergency { border-left: 3px solid var(--red); }
+  .ve-section-header.speeds    { border-left: 3px solid var(--accent); }
+  .ve-section-header.normal    { border-left: 3px solid var(--muted); }
+  .ve-section-title { flex: 1; font-size: 11px; font-weight: 600; background: none; border: none; color: var(--text); font-family: var(--font-ui); padding: 2px 4px; border-radius: 3px; }
+  .ve-section-title:focus { background: var(--bg3); outline: 1px solid var(--accent); }
+  .ve-color-dots { display: inline-flex; gap: 3px; align-items: center; }
+  .ve-color-dot { width: 11px; height: 11px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; flex-shrink: 0; }
+  .ve-color-dot:hover { filter: brightness(1.25); }
+  .ve-color-dot.active { border-color: #fff; box-shadow: 0 0 0 1px rgba(255,255,255,.5); }
+  .ve-color-dot.black  { background: #555; }
+  .ve-color-dot.blue   { background: #2f5496; }
+  .ve-color-dot.green  { background: #4e7a3a; }
+  .ve-color-dot.yellow { background: #b8860b; }
+  .ve-items { padding: 4px 6px; display: flex; flex-direction: column; gap: 2px; }
+  .ve-item { display: grid; grid-template-columns: 1fr auto 80px auto; gap: 4px; align-items: center; }
+  .ve-item input { background: var(--bg3); border: 1px solid transparent; border-radius: 3px; color: var(--text); font-family: var(--font-mono); font-size: 11px; padding: 2px 5px; width: 100%; }
+  .ve-item input:focus { border-color: var(--accent); outline: none; }
+  .ve-item input.callout { color: var(--accent); }
+  .ve-item-style { font-size: 10px; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 2px 4px; cursor: pointer; white-space: nowrap; }
+  .ve-item-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; line-height: 1; padding: 0 2px; }
+  .ve-item-del:hover { color: var(--red); }
+  .ve-add-item { font-size: 11px; color: var(--muted); background: none; border: 1px dashed var(--border); border-radius: 4px; padding: 3px 8px; cursor: pointer; width: 100%; text-align: left; margin-top: 2px; }
+  .ve-add-item:hover { border-color: var(--accent); color: var(--accent); }
+  .ve-add-section { font-size: 11px; color: var(--muted); background: none; border: 1px dashed var(--border); border-radius: 4px; padding: 4px 10px; cursor: pointer; width: 100%; text-align: left; }
+  .ve-add-section:hover { border-color: var(--accent); color: var(--accent); }
+  .ve-del-section { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 0 3px; }
+  .ve-del-section:hover { color: var(--red); }
+  .ve-section.dragging   { opacity: .4; }
+  .ve-section.drag-over  { outline: 2px dashed var(--accent); outline-offset: 2px; }
+  .ve-drag-handle { color: var(--muted); cursor: grab; padding: 0 4px; font-size: 14px; user-select: none; }
+  .ve-drag-handle:active { cursor: grabbing; }
+  .ve-select { font-size: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; color: var(--text); padding: 2px 4px; cursor: pointer; }
+  .ve-item { display: grid; grid-template-columns: 1fr auto 80px 70px auto; gap: 4px; align-items: center; }
+  /* toggle buttons */
+  .editor-mode-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 4px 7px; cursor: pointer; display: inline-flex; align-items: center; }
+  .editor-mode-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .editor-mode-toggle { display: inline-flex; gap: 2px; }
+
   /* scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -472,7 +521,15 @@
       <div class="editor-pane">
         <div class="editor-toolbar">
           <span class="editor-toolbar-label">Editor</span>
-          <button class="btn btn-ghost btn-sm" @click="formatYaml" title="Apply meta changes to YAML">
+          <div class="editor-mode-toggle">
+            <button class="editor-mode-btn" :class="{active: editorMode==='visual'}" @click="setEditorMode('visual')" title="Visual editor">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z"/></svg>
+            </button>
+            <button class="editor-mode-btn" :class="{active: editorMode==='yaml'}" @click="setEditorMode('yaml')" title="YAML source">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </button>
+          </div>
+          <button v-if="editorMode==='yaml'" class="btn btn-ghost btn-sm" @click="formatYaml" title="Apply meta changes to YAML">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             Sync meta → YAML
           </button>
@@ -482,16 +539,103 @@
         </div>
 
         <div class="editor-body">
-          <!-- YAML editor -->
+          <!-- YAML / Visual editor toggle -->
           <div class="editor-col">
             <div class="editor-col-header">
-              YAML Source
-              <span style="font-size:10px">{{ yamlLineCount }} lines</span>
+              <span v-if="editorMode==='yaml'">YAML Source <span style="font-size:10px;margin-left:4px">{{ yamlLineCount }} lines</span></span>
+              <span v-else>Visual Editor</span>
             </div>
-            <div class="editor-wrap">
+            <!-- YAML textarea -->
+            <div v-if="editorMode==='yaml'" class="editor-wrap">
               <div class="line-numbers" ref="lineNumbers">{{ lineNumbersText }}</div>
               <textarea class="yaml-editor" v-model="yamlText" spellcheck="false"
                 @input="onYamlEdit" @scroll="syncScroll" ref="editorTextarea"></textarea>
+            </div>
+            <!-- Visual editor -->
+            <div v-else class="ve-wrap">
+              <div class="ve-halves">
+                <div>
+                  <div class="ve-half-label normal">⬛ Normal Procedures</div>
+                  <div v-for="(col, ci) in veData.normal" :key="'n'+ci" class="ve-col" style="margin-bottom:10px">
+                    <div class="ve-col-header">Col {{ col.col }} <button class="ve-del-section" @click="veRemoveCol('normal',ci)" title="Remove column">×</button></div>
+                    <div v-for="(sec, si) in col.sections" :key="si" class="ve-section"
+                      draggable="true"
+                      @dragstart="veDragStart('normal',ci,si,$event)"
+                      @dragover.prevent="veDragOver($event)"
+                      @dragleave="veDragLeave($event)"
+                      @drop="veDrop('normal',ci,si,$event)">
+                      <div class="ve-section-header" :class="veSecClass(sec, 'normal')">
+                        <span class="ve-drag-handle" title="Drag to reorder">⠿</span>
+                        <input class="ve-section-title" v-model="sec.title" @input="veSave" placeholder="Section title"/>
+                        <span class="ve-color-dots">
+                          <span v-for="c in ['black','blue','green','yellow']" :key="c"
+                            class="ve-color-dot" :class="[c, {active: (sec.header_color||'black')===c}]"
+                            :title="c" @click="veSetHdrColor(sec,c)"></span>
+                        </span>
+                        <button class="ve-del-section" @click="veRemoveSec('normal',ci,si)" title="Delete section">×</button>
+                      </div>
+                      <div class="ve-items">
+                        <div v-for="(item, ii) in sec.items" :key="ii" class="ve-item">
+                          <input :value="veItemLabel(item)" @input="veSetLabel(item,$event.target.value)" placeholder="Label"/>
+                          <span style="color:var(--muted);font-size:11px">→</span>
+                          <input class="callout" :value="veItemCallout(item)" @input="veSetCallout(item,$event.target.value)" placeholder="callout"/>
+                          <select class="ve-select" :value="veItemStyle(item)" @change="veSetStyle(item,$event.target.value)">
+                            <option value="">—</option>
+                            <option value="blue">blue</option>
+                            <option value="note">note</option>
+                            <option value="warn">warn</option>
+                            <option value="centered">centered</option>
+                            <option value="centered_blue">centered_blue</option>
+                            <option value="red">red</option>
+                          </select>
+                          <button class="ve-item-del" @click="veRemoveItem(sec,ii)" title="Delete">×</button>
+                        </div>
+                        <button class="ve-add-item" @click="veAddItem(sec)">+ item</button>
+                      </div>
+                    </div>
+                    <button class="ve-add-section" @click="veAddSection('normal',ci)">+ section</button>
+                  </div>
+                  <button class="ve-add-section" @click="veAddCol('normal')">+ column</button>
+                </div>
+                <div>
+                  <div class="ve-half-label emergency">🔴 Emergency Procedures</div>
+                  <div v-for="(col, ci) in veData.emergency" :key="'e'+ci" class="ve-col" style="margin-bottom:10px">
+                    <div class="ve-col-header">Col {{ col.col }} <button class="ve-del-section" @click="veRemoveCol('emergency',ci)" title="Remove column">×</button></div>
+                    <div v-for="(sec, si) in col.sections" :key="si" class="ve-section"
+                      draggable="true"
+                      @dragstart="veDragStart('emergency',ci,si,$event)"
+                      @dragover.prevent="veDragOver($event)"
+                      @dragleave="veDragLeave($event)"
+                      @drop="veDrop('emergency',ci,si,$event)">
+                      <div class="ve-section-header emergency">
+                        <span class="ve-drag-handle" title="Drag to reorder">⠿</span>
+                        <input class="ve-section-title" v-model="sec.title" @input="veSave" placeholder="Section title"/>
+                        <button class="ve-del-section" @click="veRemoveSec('emergency',ci,si)" title="Delete section">×</button>
+                      </div>
+                      <div class="ve-items">
+                        <div v-for="(item, ii) in sec.items" :key="ii" class="ve-item">
+                          <input :value="veItemLabel(item)" @input="veSetLabel(item,$event.target.value)" placeholder="Label"/>
+                          <span style="color:var(--muted);font-size:11px">→</span>
+                          <input class="callout" :value="veItemCallout(item)" @input="veSetCallout(item,$event.target.value)" placeholder="callout"/>
+                          <select class="ve-select" :value="veItemStyle(item)" @change="veSetStyle(item,$event.target.value)">
+                            <option value="">—</option>
+                            <option value="blue">blue</option>
+                            <option value="note">note</option>
+                            <option value="warn">warn</option>
+                            <option value="centered">centered</option>
+                            <option value="centered_blue">centered_blue</option>
+                            <option value="red">red</option>
+                          </select>
+                          <button class="ve-item-del" @click="veRemoveItem(sec,ii)" title="Delete">×</button>
+                        </div>
+                        <button class="ve-add-item" @click="veAddItem(sec)">+ item</button>
+                      </div>
+                    </div>
+                    <button class="ve-add-section" @click="veAddSection('emergency',ci)">+ section</button>
+                  </div>
+                  <button class="ve-add-section" @click="veAddCol('emergency')">+ column</button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -920,7 +1064,9 @@ createApp({
     const toast       = ref({ visible: false, msg: '', type: 'success' });
     const healthStatus = ref('loading');
     const healthText   = ref('checking…');
-    const showHelp  = ref(false);
+    const showHelp   = ref(false);
+    const editorMode = ref('visual');   // 'yaml' | 'visual'
+    const veData     = ref({ normal: [], emergency: [] });
 
     const meta = ref({
       callsign: 'D-EADX', icao_type: 'DA40',
@@ -1105,6 +1251,7 @@ createApp({
 
     onMounted(() => {
       onYamlEdit();
+      veParseYaml();
       checkHealth();
     });
 
@@ -1132,11 +1279,187 @@ createApp({
       }
     }
 
+
+    // ── Visual editor helpers ────────────────────────────────────────────────
+    function veParseYaml() {
+      try {
+        const parsed = jsyaml.load(yamlText.value) || {};
+        veData.value = {
+          normal:    (parsed.normal    || []).map(c => JSON.parse(JSON.stringify(c))),
+          emergency: (parsed.emergency || []).map(c => JSON.parse(JSON.stringify(c))),
+        };
+      } catch { /* keep existing veData on parse error */ }
+    }
+
+    function veSave() {
+      // Rebuild YAML from veData, preserving meta block
+      try {
+        const parsed = jsyaml.load(yamlText.value) || {};
+        parsed.normal    = veData.value.normal;
+        parsed.emergency = veData.value.emergency;
+        // jsyaml.dump produces valid YAML
+        const metaYaml   = yamlText.value.match(/^(meta:[\s\S]*?\n)(?=normal:|emergency:|$)/m);
+        const metaBlock  = metaYaml ? metaYaml[1] : '';
+        const bodyYaml   = jsyaml.dump(
+          { normal: parsed.normal, emergency: parsed.emergency },
+          { indent: 2, lineWidth: 120, noRefs: true }
+        );
+        yamlText.value = metaBlock + bodyYaml;
+        onYamlEdit();
+      } catch (e) { console.error('veSave', e); }
+    }
+
+    function setEditorMode(mode) {
+      if (mode === 'visual') veParseYaml();
+      editorMode.value = mode;
+    }
+
+    function veSecClass(sec, half) {
+      if (sec.type === 'speeds') return 'speeds';
+      if (half === 'emergency') return 'emergency';
+      return sec.header_color || 'normal';
+    }
+
+    function veItemLabel(item) {
+      if (typeof item === 'string') return item;
+      if (typeof item === 'object') {
+        const d = Object.assign({}, item);
+        delete d.style;
+        return Object.keys(d)[0] || '';
+      }
+      return '';
+    }
+    function veItemCallout(item) {
+      if (typeof item === 'string') return '';
+      if (typeof item === 'object') {
+        const d = Object.assign({}, item);
+        delete d.style;
+        const k = Object.keys(d)[0];
+        return k ? (d[k] ?? '') : '';
+      }
+      return '';
+    }
+    function veSetLabel(item, val) {
+      if (typeof item === 'object') {
+        const d = Object.assign({}, item);
+        const style = d.style;
+        const oldKey = Object.keys(Object.fromEntries(
+          Object.entries(d).filter(([k]) => k !== 'style')
+        ))[0];
+        const callout = oldKey !== undefined ? d[oldKey] : '';
+        delete d[oldKey];
+        d[val] = callout;
+        if (style) d.style = style; else delete d.style;
+        Object.keys(item).forEach(k => delete item[k]);
+        Object.assign(item, d);
+      }
+      veSave();
+    }
+    function veSetCallout(item, val) {
+      if (typeof item === 'object') {
+        const d = Object.assign({}, item);
+        const style = d.style;
+        const key = Object.keys(Object.fromEntries(
+          Object.entries(d).filter(([k]) => k !== 'style')
+        ))[0];
+        if (key !== undefined) item[key] = val || null;
+      }
+      veSave();
+    }
+    function veAddItem(sec) {
+      sec.items = sec.items || [];
+      sec.items.push({ 'New item': 'CALLOUT' });
+      veSave();
+    }
+    function veRemoveItem(sec, ii) {
+      sec.items.splice(ii, 1);
+      veSave();
+    }
+    function veAddSection(half, ci) {
+      const col = veData.value[half][ci];
+      col.sections = col.sections || [];
+      col.sections.push({ title: 'NEW SECTION', items: [{ 'Item': 'CALLOUT' }] });
+      veSave();
+    }
+    function veRemoveSec(half, ci, si) {
+      veData.value[half][ci].sections.splice(si, 1);
+      veSave();
+    }
+    function veAddCol(half) {
+      const cols = veData.value[half];
+      cols.push({ col: cols.length + 1, sections: [] });
+      veSave();
+    }
+    function veRemoveCol(half, ci) {
+      veData.value[half].splice(ci, 1);
+      // renumber col keys
+      veData.value[half].forEach((c, i) => { c.col = i + 1; });
+      veSave();
+    }
+
+    // item style getter/setter
+    function veItemStyle(item) {
+      if (typeof item === 'object') return item.style || '';
+      return '';
+    }
+    function veSetStyle(item, val) {
+      if (typeof item === 'object') {
+        if (val) item.style = val; else delete item.style;
+      }
+      veSave();
+    }
+    function veSetHdrColor(sec, val) {
+      if (val === 'black') delete sec.header_color;
+      else sec.header_color = val;
+      veSave();
+    }
+
+    // drag-and-drop state
+    let _dragHalf = null, _dragCi = null, _dragSi = null;
+    function veDragStart(half, ci, si, ev) {
+      _dragHalf = half; _dragCi = ci; _dragSi = si;
+      ev.currentTarget.classList.add('dragging');
+      ev.dataTransfer.effectAllowed = 'move';
+    }
+    function veDragOver(ev) {
+      ev.currentTarget.classList.add('drag-over');
+    }
+    function veDragLeave(ev) {
+      ev.currentTarget.classList.remove('drag-over');
+    }
+    function veDrop(half, ci, si, ev) {
+      ev.currentTarget.classList.remove('drag-over');
+      if (_dragHalf === null) return;
+      const srcHalf = _dragHalf, srcCi = _dragCi, srcSi = _dragSi;
+      _dragHalf = _dragCi = _dragSi = null;
+      ev.currentTarget.classList.remove('dragging');
+      // same half + same column: reorder within column
+      if (srcHalf === half && srcCi === ci && srcSi !== si) {
+        const secs = veData.value[half][ci].sections;
+        const [moved] = secs.splice(srcSi, 1);
+        secs.splice(si, 0, moved);
+        veSave();
+      }
+      // same half, different column: move section to target column
+      else if (srcHalf === half && srcCi !== ci) {
+        const srcSecs = veData.value[half][srcCi].sections;
+        const dstSecs = veData.value[half][ci].sections;
+        const [moved] = srcSecs.splice(srcSi, 1);
+        dstSecs.splice(si, 0, moved);
+        veSave();
+      }
+    }
+
     return {
       yamlText, yamlError, yamlLineCount,
       pdfUrl, status, statusMsg,
       meta, opts,
       fileInput, toast, showHelp,
+      editorMode, veData, setEditorMode,
+      veSecClass, veItemLabel, veItemCallout, veSetLabel, veSetCallout,
+      veAddItem, veRemoveItem, veAddSection, veRemoveSec, veAddCol, veRemoveCol,
+      veItemStyle, veSetStyle, veSetHdrColor,
+      veDragStart, veDragOver, veDragLeave, veDrop,
       healthStatus, healthText,
       editorTextarea, lineNumbers, lineNumbersText,
       syncScroll,

@@ -14,7 +14,7 @@ The project has three components:
 |---|---|
 | `generate.py` | CLI tool: YAML → PDF |
 | `server.py` | Flask HTTP backend: `POST /generate` → PDF, serves `./public/` |
-| `public/index.html` | Vue 3 web UI (copy `checklist-ui.html` here) |
+| `public/index.html` | Vue 3 web UI |
 | `requirements.txt` | Python dependencies |
 | `Dockerfile` | Container image, non-root, port 5000 |
 
