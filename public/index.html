@@ -976,7 +976,14 @@ createApp({
       if (m.fold_margin_mm) opts.value.fold = m.fold_margin_mm;
       if (m.col_gap_mm) opts.value.col_gap = m.col_gap_mm;
       if (m.outer_margin_mm) opts.value.outer_margin = m.outer_margin_mm;
-      if (m.monospaced !== undefined) opts.value.monospaced = m.monospaced;
+      // Always derive monospaced from the resolved font value so the
+      // dropdown and the flag stay in sync after every import.
+      if (m.monospaced !== undefined) {
+        opts.value.monospaced = m.monospaced;
+        if (m.monospaced && !m.font) opts.value.font = 'dejavu-mono';
+      }
+      // font: dejavu-mono in YAML implies monospaced, even without the flag
+      if (m.font) opts.value.monospaced = (opts.value.font === 'dejavu-mono');
     }
 
     function validateYaml() {
