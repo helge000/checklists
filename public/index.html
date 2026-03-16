@@ -1219,6 +1219,7 @@ createApp({
       reader.onload = ev => {
         yamlText.value = ev.target.result;
         onYamlEdit();
+        veParseYaml();
         showToast(`Imported: ${file.name}`);
       };
       reader.readAsText(file);
