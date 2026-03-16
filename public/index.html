@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aviation Checklist Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+<style>
+  /* ── Reset & Base ─────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0f1117;
+    --bg2:       #161820;
+    --bg3:       #1e2030;
+    --border:    #2a2d3e;
+    --accent:    #4f8ef7;
+    --accent2:   #7c5cfc;
+    --green:     #3ecf8e;
+    --yellow:    #f5a623;
+    --red:       #ef4444;
+    --text:      #e2e8f0;
+    --muted:     #64748b;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    --font-ui:   'Inter', system-ui, sans-serif;
+    --radius:    8px;
+    --shadow:    0 4px 24px rgba(0,0,0,.4);
+  }
+
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 14px; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  /* ── Layout ───────────────────────────────────────────────────── */
+  .app { display: grid; grid-template-rows: 56px 1fr 36px; height: 100vh; }
+
+  .topbar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 16px; padding: 0 24px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600; font-size: 15px; letter-spacing: .02em;
+  }
+  .topbar-logo svg { color: var(--accent); }
+  .topbar-spacer { flex: 1; }
+
+  .main { display: grid; grid-template-columns: 340px 1fr; overflow: hidden; }
+
+  /* ── Sidebar ──────────────────────────────────────────────────── */
+  .sidebar {
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    display: flex; flex-direction: column;
+  }
+
+  .sidebar-section {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-section-title {
+    font-size: 10px; font-weight: 600; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  /* ── Form Controls ────────────────────────────────────────────── */
+  .form-row { margin-bottom: 12px; }
+  .form-row:last-child { margin-bottom: 0; }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 500; }
+  label span.unit { color: var(--accent); margin-left: 4px; font-size: 11px; }
+
+  input[type=text], input[type=number], select, textarea {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text); font-family: var(--font-ui);
+    font-size: 13px; padding: 7px 10px; outline: none;
+    transition: border-color .15s;
+  }
+  input[type=text]:focus, input[type=number]:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+  select option { background: var(--bg3); }
+  input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+
+  .range-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+  .range-val {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
+    padding: 4px 8px; font-family: var(--font-mono); font-size: 12px;
+    min-width: 44px; text-align: center; color: var(--accent);
+  }
+
+  .toggle {
+    width: 36px; height: 20px; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 10px; position: relative; cursor: pointer; transition: background .2s;
+    flex-shrink: 0;
+  }
+  .toggle.on { background: var(--accent); border-color: var(--accent); }
+  .toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 14px; height: 14px; border-radius: 50%; background: #fff;
+    transition: transform .2s;
+  }
+  .toggle.on::after { transform: translateX(16px); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* ── Buttons ──────────────────────────────────────────────────── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 500;
+    cursor: pointer; border: none; transition: all .15s; white-space: nowrap;
+  }
+  .btn-primary   { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #3b7de0; }
+  .btn-success   { background: var(--green); color: #0a2a1c; }
+  .btn-success:hover { filter: brightness(1.1); }
+  .btn-ghost     { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--bg3); }
+  .btn-warning   { background: var(--yellow); color: #2a1a00; }
+  .btn-warning:hover { filter: brightness(1.1); }
+  .btn:disabled  { opacity: .45; cursor: not-allowed; }
+  .btn-sm { padding: 5px 11px; font-size: 12px; }
+
+  .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* ── Editor pane ──────────────────────────────────────────────── */
+  .editor-pane {
+    display: grid; grid-template-rows: 48px 1fr; overflow: hidden;
+    background: var(--bg);
+  }
+  .editor-toolbar {
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px; padding: 0 16px;
+  }
+  .editor-toolbar-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--muted); margin-right: 4px;
+  }
+
+  .editor-body {
+    display: grid; grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+  }
+  .editor-col { display: flex; flex-direction: column; overflow: hidden; }
+  .editor-col + .editor-col { border-left: 1px solid var(--border); }
+
+  .editor-col-header {
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 8px 14px; font-size: 11px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .editor-wrap {
+    flex: 1; display: flex; overflow: hidden; background: var(--bg);
+  }
+  .line-numbers {
+    padding: 14px 10px 14px 14px; font-family: var(--font-mono); font-size: 12px;
+    line-height: 1.6; color: var(--muted); text-align: right;
+    background: var(--bg2); border-right: 1px solid var(--border);
+    user-select: none; overflow: hidden; white-space: pre;
+    min-width: 42px; flex-shrink: 0;
+  }
+  textarea.yaml-editor {
+    flex: 1; resize: none; font-family: var(--font-mono); font-size: 12px;
+    line-height: 1.6; padding: 14px; background: var(--bg); border: none;
+    border-radius: 0; color: #c9d1d9; overflow-y: auto;
+  }
+  textarea.yaml-editor:focus { border-color: transparent; outline: none; }
+
+  /* ── PDF preview ──────────────────────────────────────────────── */
+  .pdf-preview-wrap {
+    flex: 1; overflow: auto; background: #1a1a1a;
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 16px;
+  }
+  .pdf-preview-wrap iframe {
+    width: 100%; border: none; min-height: 600px;
+    box-shadow: var(--shadow); background: #fff;
+  }
+  .preview-placeholder {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; gap: 12px; color: var(--muted);
+  }
+  .preview-placeholder svg { opacity: .3; }
+  .preview-placeholder p { font-size: 13px; }
+
+  /* ── Status bar ───────────────────────────────────────────────── */
+  .status-bar {
+    padding: 6px 16px; font-size: 11px; display: flex; align-items: center; gap: 8px;
+    background: var(--bg2); border-top: 1px solid var(--border);
+  }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .status-dot.ok      { background: var(--green); }
+  .status-dot.error   { background: var(--red); }
+  .status-dot.loading { background: var(--yellow); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
+
+  /* ── Notifications ────────────────────────────────────────────── */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 18px;
+    font-size: 13px; box-shadow: var(--shadow);
+    display: flex; align-items: center; gap: 10px;
+    z-index: 999; transition: opacity .3s;
+  }
+  .toast.error { border-color: var(--red); }
+  .toast.success { border-color: var(--green); }
+
+  /* ── File input hidden ────────────────────────────────────────── */
+  input[type=file] { display: none; }
+
+
+  /* ── Help modal ───────────────────────────────────────────────── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.75);
+    z-index: 200; display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .modal {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; width: 100%; max-width: 860px; max-height: 90vh;
+    overflow-y: auto; box-shadow: var(--shadow);
+  }
+  .modal-header {
+    padding: 20px 24px 0; display: flex; align-items: center;
+    justify-content: space-between; position: sticky; top: 0;
+    background: var(--bg2); z-index: 1;
+  }
+  .modal-header h2 { font-size: 16px; font-weight: 600; }
+  .modal-close {
+    background: none; border: none; color: var(--muted); font-size: 22px;
+    cursor: pointer; line-height: 1; padding: 4px 8px; border-radius: 6px;
+  }
+  .modal-close:hover { background: var(--bg3); color: var(--text); }
+  .modal-body { padding: 20px 24px 28px; overflow-y: auto; }
+  .app-footer {
+    background: var(--bg2); border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    padding: 0 24px; font-size: 11px; color: var(--muted);
+  }
+  .app-footer a {
+    color: var(--accent); text-decoration: none; display: inline-flex;
+    align-items: center; gap: 5px;
+  }
+  .app-footer a:hover { text-decoration: underline; }
+  .app-footer .mf-sep { color: var(--border); }
+  .app-footer .mf-copy { margin-left: auto; }
+  .footer-status { display: inline-flex; align-items: center; gap: 6px; }
+  .footer-status .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .footer-status .status-dot.ok      { background: var(--green); }
+  .footer-status .status-dot.error   { background: var(--red); }
+  .footer-status .status-dot.loading { background: var(--yellow); animation: pulse 1s infinite; }
+
+  .help-section { margin-bottom: 28px; }
+  .help-section h3 {
+    font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--accent); margin-bottom: 14px;
+  }
+  .help-section p { font-size: 13px; line-height: 1.7; color: var(--text); margin-bottom: 8px; }
+  .help-section code {
+    font-family: var(--font-mono); font-size: 11.5px; background: var(--bg3);
+    border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px;
+    color: var(--accent);
+  }
+
+  /* A4 diagram */
+  .a4-diagram {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px 20px; margin-bottom: 16px;
+  }
+  .a4-svg-wrap { width: 100%; overflow: hidden; }
+
+  /* dimension labels */
+  .dim-label { font-size: 10px; fill: var(--muted, #64748b); font-family: monospace; }
+  .dim-arrow { stroke: #64748b; stroke-width: 1; marker-end: url(#arr); }
+
+  /* YAML example */
+  pre.yaml-block {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 16px; font-family: var(--font-mono); font-size: 12px;
+    line-height: 1.7; overflow-x: auto; white-space: pre; color: #c9d1d9;
+    margin: 0;
+  }
+  .yk { color: #79c0ff; }              /* key */
+  .yv { color: #a8daab; }              /* value */
+  .yp { color: #6e7681; }              /* punctuation : */
+  .yc { color: #8b949e; font-style: italic; } /* comment */
+
+  .param-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .param-table th {
+    text-align: left; padding: 6px 10px; background: var(--bg3);
+    color: var(--muted); font-weight: 600; font-size: 11px;
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  .param-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); }
+  .param-table td:first-child { font-family: var(--font-mono); color: var(--accent); font-size: 11px; }
+  .param-table td:last-child { color: var(--muted); }
+  .param-table tr:last-child td { border-bottom: none; }
+
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="app">
+
+    <!-- ── Topbar ─────────────────────────────────────────────── -->
+    <div class="topbar">
+      <div class="topbar-logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        Aviation Checklist Generator
+      </div>
+      <span style="font-size:11px;color:var(--muted);margin-left:4px;">Create your own paper checklist</span>
+      <div class="topbar-spacer"></div>
+      <div class="btn-group">
+        <button class="btn btn-ghost btn-sm" @click="showHelp=true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Help
+        </button>
+        <button class="btn btn-ghost btn-sm" @click="triggerImport">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Import YAML
+        </button>
+        <button class="btn btn-ghost btn-sm" @click="exportYaml">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Export YAML
+        </button>
+        <button class="btn btn-primary btn-sm" @click="generate" :disabled="status==='loading'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          {{ status === 'loading' ? 'Generating…' : 'Generate PDF' }}
+        </button>
+        <button class="btn btn-success btn-sm" @click="downloadPdf" :disabled="!pdfUrl">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download PDF
+        </button>
+      </div>
+      <input type="file" ref="fileInput" accept=".yaml,.yml" @change="onFileImport"/>
+    </div>
+
+    <!-- ── Main grid ──────────────────────────────────────────── -->
+    <div class="main">
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+
+        <!-- Aircraft meta -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Aircraft</div>
+          <div class="form-row">
+            <label>Callsign</label>
+            <input type="text" v-model="meta.callsign" placeholder="D-EADX" @input="syncMetaToYaml"/>
+          </div>
+          <div class="grid-2">
+            <div class="form-row">
+              <label>ICAO Type</label>
+              <input type="text" v-model="meta.icao_type" placeholder="DA40" @input="syncMetaToYaml"/>
+            </div>
+            <div class="form-row">
+              <label>Revision</label>
+              <input type="text" v-model="meta.revision" placeholder="Rev 1" @input="syncMetaToYaml"/>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Model / Full name</label>
+            <input type="text" v-model="meta.model" placeholder="Diamond DA40 D TDI" @input="syncMetaToYaml"/>
+          </div>
+        </div>
+
+        <!-- Layout -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Layout</div>
+
+          <div class="form-row">
+            <label>Columns per half</label>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-sm" :class="opts.columns===4 ? 'btn-primary' : 'btn-ghost'"
+                @click="opts.columns=4; syncMetaToYaml()" style="flex:1">
+                2 per half<br><span style="font-size:10px;opacity:.7">4 total</span>
+              </button>
+              <button class="btn btn-sm" :class="opts.columns===6 ? 'btn-primary' : 'btn-ghost'"
+                @click="opts.columns=6; syncMetaToYaml()" style="flex:1">
+                3 per half<br><span style="font-size:10px;opacity:.7">6 total</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-row">
+              <label>Fold margin <span class="unit">mm</span></label>
+              <div class="range-row">
+                <input type="range" min="0" max="20" step="0.5" v-model.number="opts.fold" @input="syncMetaToYaml"/>
+                <div class="range-val">{{ opts.fold }}</div>
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Col gap <span class="unit">mm</span></label>
+              <div class="range-row">
+                <input type="range" min="0" max="10" step="0.5" v-model.number="opts.col_gap" @input="syncMetaToYaml"/>
+                <div class="range-val">{{ opts.col_gap }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Outer margin <span class="unit">mm</span></label>
+            <div class="range-row">
+              <input type="range" min="4" max="25" step="0.5" v-model.number="opts.outer_margin" @input="syncMetaToYaml"/>
+              <div class="range-val">{{ opts.outer_margin }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typography -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Typography</div>
+
+          <div class="form-row">
+            <label>Font family</label>
+            <select v-model="opts.font" @change="onFontChange">
+              <option value="arial">Arial (Liberation Sans)</option>
+              <option value="dejavu">DejaVu Sans</option>
+              <option value="dejavu-condensed">DejaVu Sans Condensed</option>
+              <option value="dejavu-mono">DejaVu Sans Mono</option>
+            </select>
+          </div>
+
+
+          <div class="form-row">
+            <label>Scale <span class="unit">multiplier</span></label>
+            <div class="range-row">
+              <input type="range" min="0.6" max="1.8" step="0.05" v-model.number="opts.scale" @input="syncMetaToYaml"/>
+              <div class="range-val">{{ opts.scale.toFixed(2) }}</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Line spacing <span class="unit">multiplier</span></label>
+            <div class="range-row">
+              <input type="range" min="1.0" max="2.5" step="0.05" v-model.number="opts.line_spacing" @input="syncMetaToYaml"/>
+              <div class="range-val">{{ opts.line_spacing.toFixed(2) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick templates -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Quick Start</div>
+          <button class="btn btn-ghost btn-sm" @click="loadTemplate('minimal')" style="width:100%;justify-content:flex-start">
+            📋 Load blank template
+          </button>
+        </div>
+
+
+      </div><!-- /sidebar -->
+
+      <!-- Editor pane -->
+      <div class="editor-pane">
+        <div class="editor-toolbar">
+          <span class="editor-toolbar-label">Editor</span>
+          <button class="btn btn-ghost btn-sm" @click="formatYaml" title="Apply meta changes to YAML">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Sync meta → YAML
+          </button>
+          <div style="flex:1"></div>
+          <abbr v-if="yamlError" style="color:var(--red);font-size:11px;cursor:help;text-decoration:none" :title="yamlError">⚠ invalid YAML</abbr>
+          <span v-else style="color:var(--green);font-size:11px">✓ valid YAML</span>
+        </div>
+
+        <div class="editor-body">
+          <!-- YAML editor -->
+          <div class="editor-col">
+            <div class="editor-col-header">
+              YAML Source
+              <span style="font-size:10px">{{ yamlLineCount }} lines</span>
+            </div>
+            <div class="editor-wrap">
+              <div class="line-numbers" ref="lineNumbers">{{ lineNumbersText }}</div>
+              <textarea class="yaml-editor" v-model="yamlText" spellcheck="false"
+                @input="onYamlEdit" @scroll="syncScroll" ref="editorTextarea"></textarea>
+            </div>
+          </div>
+
+          <!-- PDF preview -->
+          <div class="editor-col">
+            <div class="editor-col-header">
+              PDF Preview
+              <span v-if="pdfUrl" style="color:var(--green);font-size:10px">● live</span>
+            </div>
+            <div class="pdf-preview-wrap">
+              <iframe v-if="pdfUrl" :src="pdfUrl" :style="{height: previewHeight}"></iframe>
+              <div v-else class="preview-placeholder">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                <p>Click <strong>Generate PDF</strong> to preview</p>
+              </div>
+            </div>
+            <div class="status-bar" v-if="statusMsg">
+              {{ statusMsg }}
+            </div>
+          </div>
+        </div>
+      </div><!-- /editor-pane -->
+
+    </div><!-- /main -->
+    <footer class="app-footer">
+      <span class="footer-status">
+        <span class="status-dot" :class="healthStatus"></span>
+        <span style="font-size:11px">{{ healthText }}</span>
+      </span>
+      <span style="margin-left:auto;display:inline-flex;align-items:center;gap:14px">
+        <a href="https://github.com/helge000" target="_blank" rel="noopener">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg> © 2026 Daniel Helgenberger
+        </a>
+        <span class="mf-sep">|</span>
+        <a href="https://github.com/helge000/checklists/issues/new" target="_blank" rel="noopener">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg> Report Issue
+        </a>
+        <span class="mf-sep">|</span>
+        <a href="https://github.com/helge000/checklists/blob/main/LICENSE" target="_blank" rel="noopener">GPL v3</a>
+      </span>
+    </footer>
+  </div><!-- /app -->
+
+  <!-- Toast -->
+  <div v-if="toast.visible" class="toast" :class="toast.type">
+    {{ toast.msg }}
+  </div>
+
+  <!-- ── Help modal ──────────────────────────────────────────────── -->
+  <div v-if="showHelp" class="modal-overlay" @click.self="showHelp=false">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>📄 Aviation Checklist Generator — Help</h2>
+        <button class="modal-close" @click="showHelp=false">×</button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Page layout diagram -->
+        <div class="help-section">
+          <h3>Page Layout</h3>
+          <p>The generator produces a single <strong>A4 landscape</strong> page that is designed to be folded vertically in the centre.
+             The <strong>left half</strong> contains normal (pre-flight / flight) procedures, the <strong>right half</strong> contains emergency procedures.</p>
+
+          <div class="a4-diagram">
+            <div class="a4-svg-wrap">
+              <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:260px">
+                <defs>
+                  <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/>
+                  </marker>
+                  <marker id="arrl" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto-start-reverse">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/>
+                  </marker>
+                </defs>
+
+                <!-- Page background -->
+                <rect x="60" y="20" width="580" height="240" rx="4" fill="#1e2030" stroke="#2a2d3e" stroke-width="1.5"/>
+
+                <!-- Outer margin indicators (top) -->
+                <rect x="60" y="20" width="580" height="12" fill="#2a2d3e" rx="4"/>
+                <rect x="60" y="248" width="580" height="12" fill="#2a2d3e" rx="4"/>
+                <rect x="60" y="20" width="12" height="240" fill="#2a2d3e"/>
+                <rect x="628" y="20" width="12" height="240" fill="#2a2d3e"/>
+
+                <!-- Title bars -->
+                <rect x="72" y="32" width="272" height="16" rx="2" fill="#374151"/>
+                <rect x="356" y="32" width="272" height="16" rx="2" fill="#374151"/>
+                <text x="208" y="43" text-anchor="middle" fill="#9ca3af" font-size="8" font-family="monospace">CALLSIGN  TYPE — subtitle</text>
+                <text x="492" y="43" text-anchor="middle" fill="#9ca3af" font-size="8" font-family="monospace">CALLSIGN  TYPE — subtitle</text>
+
+                <!-- Left half: 3 normal columns -->
+                <rect x="72"  y="52" width="86" height="180" rx="2" fill="#162032" stroke="#2f5496" stroke-width="1"/>
+                <rect x="72"  y="52" width="86" height="12"  rx="2" fill="#1a3a5c"/>
+                <text x="115" y="61" text-anchor="middle" fill="#79c0ff" font-size="7" font-family="monospace">BEFORE START</text>
+                <text x="115" y="74" fill="#64748b" font-size="6.5" font-family="monospace" x="78">  Item . . . . CALLOUT</text>
+                <text x="115" y="83" fill="#64748b" font-size="6.5" font-family="monospace" x="78">  Item . . . . CALLOUT</text>
+                <text x="115" y="97" fill="#64748b" font-size="6.5" font-family="monospace" x="78">  Item . . . . CALLOUT</text>
+
+                <rect x="162" y="52" width="86" height="180" rx="2" fill="#162032" stroke="#2f5496" stroke-width="1"/>
+                <rect x="162" y="52" width="86" height="12"  rx="2" fill="#1a3a5c"/>
+                <text x="205" y="61" text-anchor="middle" fill="#79c0ff" font-size="7" font-family="monospace">RUN UP</text>
+
+                <rect x="252" y="52" width="86" height="180" rx="2" fill="#162032" stroke="#2f5496" stroke-width="1"/>
+                <rect x="252" y="52" width="86" height="12"  rx="2" fill="#1a3a5c"/>
+                <text x="295" y="61" text-anchor="middle" fill="#79c0ff" font-size="7" font-family="monospace">CRUISE</text>
+
+                <!-- Right half: 3 emergency columns -->
+                <rect x="356" y="52" width="86" height="180" rx="2" fill="#1f1010" stroke="#7f1d1d" stroke-width="1"/>
+                <rect x="356" y="52" width="86" height="12"  rx="2" fill="#7f1d1d"/>
+                <text x="399" y="61" text-anchor="middle" fill="#fca5a5" font-size="7" font-family="monospace">ENG FAILURE</text>
+                <text x="362" y="74" fill="#ef4444" font-size="6.5" font-family="monospace">  Glide . . ESTABLISH</text>
+                <text x="362" y="83" fill="#ef4444" font-size="6.5" font-family="monospace">  MAYDAY . TRANSMIT</text>
+
+                <rect x="446" y="52" width="86" height="180" rx="2" fill="#1f1010" stroke="#7f1d1d" stroke-width="1"/>
+                <rect x="446" y="52" width="86" height="12"  rx="2" fill="#7f1d1d"/>
+                <text x="489" y="61" text-anchor="middle" fill="#fca5a5" font-size="7" font-family="monospace">ENGINE FIRE</text>
+
+                <rect x="536" y="52" width="86" height="180" rx="2" fill="#1f1010" stroke="#7f1d1d" stroke-width="1"/>
+                <rect x="536" y="52" width="86" height="12"  rx="2" fill="#7f1d1d"/>
+                <text x="579" y="61" text-anchor="middle" fill="#fca5a5" font-size="7" font-family="monospace">ELEC FAILURE</text>
+
+                <!-- Fold line -->
+                <line x1="344" y1="18" x2="344" y2="262" stroke="#f5a623" stroke-width="1.5" stroke-dasharray="4,3"/>
+                <text x="344" y="14" text-anchor="middle" fill="#f5a623" font-size="8" font-family="monospace">FOLD</text>
+
+                <!-- Labels: halves -->
+                <text x="208" y="246" text-anchor="middle" fill="#3ecf8e" font-size="9" font-family="monospace" font-weight="bold">← NORMAL PROCEDURES</text>
+                <text x="492" y="246" text-anchor="middle" fill="#ef4444" font-size="9" font-family="monospace" font-weight="bold">EMERGENCY PROCEDURES →</text>
+
+                <!-- Dimension: outer_margin (left) -->
+                <line x1="56" y1="20" x2="56" y2="260" stroke="#64748b" stroke-width="0.8"/>
+                <line x1="52" y1="20"  x2="60" y2="20"  stroke="#64748b" stroke-width="0.8"/>
+                <line x1="52" y1="260" x2="60" y2="260" stroke="#64748b" stroke-width="0.8"/>
+                <text x="48" y="143" text-anchor="middle" fill="#64748b" font-size="8" font-family="monospace" transform="rotate(-90,48,143)">outer_margin</text>
+
+                <!-- Dimension: fold_margin (around fold) -->
+                <line x1="338" y1="268" x2="350" y2="268" stroke="#f5a623" stroke-width="0.8"/>
+                <line x1="338" y1="265" x2="338" y2="271" stroke="#f5a623" stroke-width="0.8"/>
+                <line x1="350" y1="265" x2="350" y2="271" stroke="#f5a623" stroke-width="0.8"/>
+                <text x="344" y="277" text-anchor="middle" fill="#f5a623" font-size="8" font-family="monospace">fold_margin (×2)</text>
+
+                <!-- Dimension: col_gap -->
+                <line x1="158" y1="268" x2="162" y2="268" stroke="#64748b" stroke-width="0.8"/>
+                <line x1="158" y1="265" x2="158" y2="271" stroke="#64748b" stroke-width="0.8"/>
+                <line x1="162" y1="265" x2="162" y2="271" stroke="#64748b" stroke-width="0.8"/>
+                <text x="160" y="277" text-anchor="middle" fill="#64748b" font-size="7.5" font-family="monospace">col_gap</text>
+              </svg>
+            </div>
+          </div>
+
+          <table class="param-table">
+            <tr><th>Parameter</th><th>What it controls</th><th>Default</th></tr>
+            <tr><td>outer_margin</td><td>White space around the entire page (all four edges)</td><td>8 mm</td></tr>
+            <tr><td>fold_margin</td><td>Extra space on each side of the centre fold line so content isn't cut when folding</td><td>8 mm</td></tr>
+            <tr><td>col_gap</td><td>Gap between adjacent columns on the same half</td><td>3 mm</td></tr>
+            <tr><td>columns per half</td><td>2 → 4 total columns (2 normal + 2 emergency) · 3 → 6 total</td><td>3 / half</td></tr>
+            <tr><td>scale</td><td>Multiplier applied to all font sizes and bar heights (0.8 = smaller, 1.2 = larger)</td><td>1.0</td></tr>
+            <tr><td>line_spacing</td><td>Multiplier for the vertical space between checklist items</td><td>1.35</td></tr>
+          </table>
+        </div>
+
+        <!-- YAML structure -->
+        <!-- Item styles -->
+        <div class="help-section">
+          <h3>Item Styles</h3>
+          <table class="param-table">
+            <tr><th>Style</th><th>Appearance</th><th>Typical use</th></tr>
+            <tr><td>(none)</td><td>Label left · callout right · dot leader</td><td>Standard checklist item</td></tr>
+            <tr><td>blue</td><td>Blue italic, both label and callout</td><td>Engine start sequence steps</td></tr>
+            <tr><td>note</td><td>Small grey italic, indented, no callout</td><td>Sub-notes, limits, tolerances</td></tr>
+            <tr><td>warn</td><td>Red bold italic, full width</td><td>Critical warnings, EVACUATE</td></tr>
+            <tr><td>centered</td><td>Centred black bold</td><td>Phase dividers (— ON RWY —)</td></tr>
+            <tr><td>centered_blue</td><td>Centred blue bold</td><td>Sub-phase markers (ABM THRESHOLD)</td></tr>
+            <tr><td>red</td><td>Red bold, label + callout with dot leader</td><td>Critical speeds (Vne, glide)</td></tr>
+          </table>
+          <p style="margin-top:12px;font-size:13px;color:var(--muted)">
+            <strong style="color:var(--text)">Speeds section</strong> — use <code>type: speeds</code> on a section to render it as a
+            compact two-column table (no dot leaders). Add <code>body_bg: true</code> for a light grey background.
+            Individual speed items accept <code>style: red</code> to highlight critical values (Vne, best glide, etc.).
+          </p>
+        </div>
+
+        <!-- Header colours -->
+        <div class="help-section">
+          <h3>Section Header Colours</h3>
+          <p>Normal-procedure sections accept a <code>header_color</code> key.
+             Emergency sections are always red. Speeds sections are always blue.</p>
+          <table class="param-table">
+            <tr><th>Value</th><th>Appearance</th><th>Suggested use</th></tr>
+            <tr><td>black</td><td>Black background, white text (default)</td><td>Before Start, Parking, Before T/O</td></tr>
+            <tr><td>blue</td><td>Dark blue (#2F5496), white text</td><td>Engine Start, Run Up, Approach</td></tr>
+            <tr><td>green</td><td>Mid-tone green (#4E7A3A), white text</td><td>Taxi, Cruise, After Landing</td></tr>
+            <tr><td>yellow</td><td>Dark amber (#B8860B), white text</td><td>Parking, After Landing</td></tr>
+          </table>
+        </div>
+
+        <!-- YAML reference -->
+        <div class="help-section">
+          <h3>YAML Structure</h3>
+          <p>Every checklist file has three top-level keys: <code>meta</code>, <code>normal</code>, and <code>emergency</code>.</p>
+
+          <p><code>normal</code> sections go on the <strong>left half</strong>; <code>emergency</code> sections go on the <strong>right half</strong>.
+          Columns are numbered <code>1..N</code> within each half independently.</p>
+
+          <pre class="yaml-block"><span class="yc"># ── Aircraft identity ─────────────────────────</span>
+<span class="yk">meta</span><span class="yp">:</span>
+  <span class="yk">callsign</span><span class="yp">:</span> <span class="yv">       "D-EADX"</span>
+  <span class="yk">icao_type</span><span class="yp">:</span> <span class="yv">      "DA40"</span>
+  <span class="yk">model</span><span class="yp">:</span> <span class="yv">          "Diamond DA40 D TDI"</span>
+  <span class="yk">revision</span><span class="yp">:</span> <span class="yv">       "Rev 1  |  2024-11"</span>
+  <span class="yc"># Layout — settable here or via the sidebar sliders</span>
+  <span class="yk">columns</span><span class="yp">:</span> <span class="yv">        6</span>  <span class="yc"># 4 or 6  (= 2 or 3 cols per half)</span>
+  <span class="yk">font</span><span class="yp">:</span> <span class="yv">           dejavu-condensed</span>
+  <span class="yk">scale</span><span class="yp">:</span> <span class="yv">          1.1</span>  <span class="yc"># font size multiplier</span>
+  <span class="yk">line_spacing</span><span class="yp">:</span> <span class="yv">   1.5</span>
+  <span class="yk">fold_margin_mm</span><span class="yp">:</span> <span class="yv"> 8</span>
+  <span class="yk">col_gap_mm</span><span class="yp">:</span> <span class="yv">     3.0</span>
+  <span class="yk">outer_margin_mm</span><span class="yp">:</span> <span class="yv">8</span>
+
+<span class="yc"># ── Normal procedures (LEFT half) ─────────────</span>
+<span class="yk">normal</span><span class="yp">:</span>
+  - <span class="yk">col</span><span class="yp">:</span> <span class="yv">1</span>
+    <span class="yk">sections</span><span class="yp">:</span>
+      - <span class="yk">title</span><span class="yp">:</span> <span class="yv">"BEFORE START"</span>
+        <span class="yk">header_color</span><span class="yp">:</span> <span class="yv">black</span>  <span class="yc"># black | blue | green | yellow</span>
+        <span class="yk">body_bg</span><span class="yp">:</span> <span class="yv">false</span>  <span class="yc"># true = light grey background</span>
+        <span class="yk">items</span><span class="yp">:</span>
+          - <span class="yk">Parking Brake</span><span class="yp">:</span> <span class="yv">SET</span>
+          - <span class="yk">AVIONIC MASTER</span><span class="yp">:</span> <span class="yv">"OFF"</span>  <span class="yc"># quote ON/OFF — YAML reads them as booleans!</span>
+          - <span class="yk">Mixture</span><span class="yp">:</span> <span class="yv">FULL RICH</span>
+            <span class="yk">style</span><span class="yp">:</span> <span class="yv">blue</span>  <span class="yc"># blue | note | warn | centered | centered_blue | red</span>
+          - <span class="yk">Wait for glow indicator</span><span class="yp">:</span>  <span class="yc"># item with no callout</span>
+            <span class="yk">style</span><span class="yp">:</span> <span class="yv">note</span>
+
+      - <span class="yk">title</span><span class="yp">:</span> <span class="yv">"OPERATING SPEEDS [KIAS]"</span>
+        <span class="yk">type</span><span class="yp">:</span> <span class="yv">speeds</span>  <span class="yc"># two-column table, no dot leaders</span>
+        <span class="yk">body_bg</span><span class="yp">:</span> <span class="yv">true</span>  <span class="yc"># recommended: light grey background</span>
+        <span class="yk">items</span><span class="yp">:</span>
+          - <span class="yk">Vr</span><span class="yp">:</span> <span class="yv">59</span>
+          - <span class="yk">Vy</span><span class="yp">:</span> <span class="yv">78</span>
+          - <span class="yk">Vne</span><span class="yp">:</span> <span class="yv">178</span>
+            <span class="yk">style</span><span class="yp">:</span> <span class="yv">red</span>  <span class="yc"># red = highlighted speed (Vne, glide, etc.)</span>
+
+<span class="yc"># ── Emergency procedures (RIGHT half) ─────────</span>
+<span class="yk">emergency</span><span class="yp">:</span>
+  - <span class="yk">col</span><span class="yp">:</span> <span class="yv">1</span>  <span class="yc"># col 1 of emergency = col 4 on the page</span>
+    <span class="yk">sections</span><span class="yp">:</span>
+      - <span class="yk">title</span><span class="yp">:</span> <span class="yv">"ENGINE FAILURE AFTER T/O"</span>
+        <span class="yk">items</span><span class="yp">:</span>
+          - <span class="yk">Glide</span><span class="yp">:</span> <span class="yv">ESTABLISH</span>
+          - <span class="yk">ENGINE MASTER</span><span class="yp">:</span> <span class="yv">"OFF"</span>
+          - <span class="yk">Mayday</span><span class="yp">:</span> <span class="yv">TRANSMIT</span>
+            <span class="yk">style</span><span class="yp">:</span> <span class="yv">warn</span>
+          - <span class="yk">EVACUATE</span><span class="yp">:</span>
+            <span class="yk">style</span><span class="yp">:</span> <span class="yv">warn</span></pre>
+        </div>
+
+      </div><!-- /modal-body -->
+    </div><!-- /modal -->
+  </div><!-- /modal-overlay -->
+</div><!-- #app -->
+
+<script>
+const { createApp, ref, computed, onMounted, watch } = Vue;
+
+// ── Templates ──────────────────────────────────────────────────────────────
+const TEMPLATES = {
+  minimal: `meta:
+  callsign: "D-XXXX"
+  icao_type: "TYPE"
+  model: "Aircraft Type / Variant"
+  revision: "Rev 1"
+  columns: 4
+  font: dejavu-condensed
+  scale: 1.0
+  line_spacing: 1.35
+  fold_margin_mm: 8
+  col_gap_mm: 3.0
+  outer_margin_mm: 8
+
+normal:
+  - col: 1
+    sections:
+      - title: "BEFORE START"
+        header_color: black
+        items:
+          - Normal item: CALLOUT
+          - AVIONIC MASTER: "OFF"
+          - Engine Start step: START
+            style: blue
+          - (sub-note / limit text):
+            style: note
+          - — CENTERED DIVIDER —:
+            style: centered
+          - ABM THRESHOLD:
+            style: centered_blue
+          - Critical Warning:
+            style: warn
+
+      - title: "RUN UP"
+        header_color: blue
+        items:
+          - Brakes: SET
+          - Throttle: 1800 RPM
+            style: blue
+          - (max. drop 175 RPM):
+            style: note
+
+  - col: 2
+    sections:
+      - title: "AFTER TAKE OFF"
+        header_color: green
+        items:
+          - Flaps: UP
+          - Power: RED. AS REQ.
+
+      - title: "OPERATING SPEEDS [KIAS]"
+        type: speeds
+        body_bg: true
+        items:
+          - Vr: 0
+          - Vx: 0
+          - Vy: 0
+          - Vs: 0
+          - Vne: 0
+            style: red
+          - V glide: 0
+            style: red
+
+emergency:
+  - col: 1
+    sections:
+      - title: "ENGINE FAILURE"
+        items:
+          - Glide: ESTABLISH
+          - Landing Site: SELECT
+          - ENGINE MASTER: "OFF"
+          - ELECTRIC MASTER: "OFF"
+          - Mayday: TRANSMIT
+            style: warn
+          - EVACUATE:
+            style: warn
+
+  - col: 2
+    sections:
+      - title: "ENGINE FIRE"
+        items:
+          - Fuel Shut-off: CLOSED
+          - Throttle: FULL FORWARD
+          - Land without engine:
+            style: warn
+`
+};
+
+// ── Simple YAML meta extractor (no full parse needed for sidebar sync) ──────
+function extractMeta(yamlText) {
+  const meta = {};
+  const metaMatch = yamlText.match(/^meta:\s*\n((?:[ \t]+.+\n?)*)/m);
+  if (!metaMatch) return meta;
+  const block = metaMatch[1];
+  const patterns = {
+    callsign:        /callsign:\s*["']?([^"'\n]+)["']?/,
+    icao_type:       /icao_type:\s*["']?([^"'\n]+)["']?/,
+    model:           /model:\s*["']?([^"'\n]+)["']?/,
+    revision:        /revision:\s*["']?([^"'\n]*)["']?/,
+    columns:         /columns:\s*(\d+)/,
+    font:            /font:\s*["']?([^"'\n]+)["']?/,
+    scale:           /scale:\s*([\d.]+)/,
+    line_spacing:    /line_spacing:\s*([\d.]+)/,
+    fold_margin_mm:  /fold_margin_mm:\s*([\d.]+)/,
+    col_gap_mm:      /col_gap_mm:\s*([\d.]+)/,
+    outer_margin_mm: /outer_margin_mm:\s*([\d.]+)/,
+    monospaced:      /monospaced:\s*(true|false)/,
+  };
+  for (const [k, re] of Object.entries(patterns)) {
+    const m = block.match(re);
+    if (m) {
+      if (k === 'columns') meta[k] = parseInt(m[1]);
+      else if (['scale','line_spacing','fold_margin_mm','col_gap_mm','outer_margin_mm'].includes(k))
+        meta[k] = parseFloat(m[1]);
+      else if (k === 'monospaced') meta[k] = m[1] === 'true';
+      else meta[k] = m[1].trim();
+    }
+  }
+  return meta;
+}
+
+function updateMetaInYaml(yaml, meta, opts) {
+  // Replace meta block with current values
+  const newMeta = `meta:
+  callsign: "${meta.callsign || ''}"
+  icao_type: "${meta.icao_type || ''}"
+  model: "${meta.model || ''}"
+  revision: "${meta.revision || ''}"
+  columns: ${opts.columns}
+  font: ${opts.font}
+  scale: ${opts.scale}
+  line_spacing: ${opts.line_spacing}
+  fold_margin_mm: ${opts.fold}
+  col_gap_mm: ${opts.col_gap}
+  outer_margin_mm: ${opts.outer_margin}`;
+
+  return yaml.replace(/^meta:\s*\n(?:[ \t]+.*\n?)*/m, newMeta + '\n');
+}
+
+// ── App ────────────────────────────────────────────────────────────────────
+createApp({
+  setup() {
+    // Derive server base URL from the current browser location.
+    // When served via server.py the UI and API share the same origin.
+    const serverUrl = ref(`${window.location.protocol}//${window.location.host}`);
+
+    const yamlText  = ref(TEMPLATES.minimal);
+    const yamlError = ref('');
+    const pdfUrl    = ref('');
+    const pdfBlob   = ref(null);
+    const status    = ref('idle');
+    const statusMsg = ref('');
+
+    const fileInput      = ref(null);
+    const editorTextarea = ref(null);
+    const lineNumbers    = ref(null);
+    const toast       = ref({ visible: false, msg: '', type: 'success' });
+    const healthStatus = ref('loading');
+    const healthText   = ref('checking…');
+    const showHelp  = ref(false);
+
+    const meta = ref({
+      callsign: 'D-EADX', icao_type: 'DA40',
+      model: 'Diamond DA40 D TDI', revision: 'Rev 1',
+    });
+    const opts = ref({
+      columns: 6, fold: 8, col_gap: 3.0, outer_margin: 8,
+      font: 'dejavu-condensed', monospaced: false,
+      scale: 1.1, line_spacing: 1.5,
+    });
+
+    const yamlLineCount    = computed(() => yamlText.value.split('\n').length);
+    const lineNumbersText  = computed(() => {
+      const n = yamlText.value.split('\n').length;
+      return Array.from({length: n}, (_, i) => i + 1).join('\n');
+    });
+    const previewHeight = computed(() => {
+      // A4 landscape ratio = 297/210 ≈ 1.414 inverted
+      return '100%';
+    });
+
+    // ── Toast ──────────────────────────────────────────────────────
+    function showToast(msg, type = 'success') {
+      toast.value = { visible: true, msg, type };
+      setTimeout(() => { toast.value.visible = false; }, 3000);
+    }
+
+    // ── Sync meta sidebar → YAML ───────────────────────────────────
+    function syncMetaToYaml() {
+      yamlText.value = updateMetaInYaml(yamlText.value, meta.value, opts.value);
+      validateYaml();
+    }
+
+    function onFontChange() {
+      if (opts.value.font === 'dejavu-mono') opts.value.monospaced = true;
+      else opts.value.monospaced = false;
+      syncMetaToYaml();
+    }
+
+
+    // ── Parse YAML edit → update sidebar ──────────────────────────
+    function onYamlEdit() {
+      validateYaml();
+      const m = extractMeta(yamlText.value);
+      if (m.callsign) meta.value.callsign = m.callsign;
+      if (m.icao_type) meta.value.icao_type = m.icao_type;
+      if (m.model) meta.value.model = m.model;
+      if (m.revision !== undefined) meta.value.revision = m.revision;
+      if (m.columns) opts.value.columns = m.columns;
+      if (m.font) opts.value.font = m.font;
+      if (m.scale) opts.value.scale = m.scale;
+      if (m.line_spacing) opts.value.line_spacing = m.line_spacing;
+      if (m.fold_margin_mm) opts.value.fold = m.fold_margin_mm;
+      if (m.col_gap_mm) opts.value.col_gap = m.col_gap_mm;
+      if (m.outer_margin_mm) opts.value.outer_margin = m.outer_margin_mm;
+      if (m.monospaced !== undefined) opts.value.monospaced = m.monospaced;
+    }
+
+    function validateYaml() {
+      try {
+        const parsed = jsyaml.load(yamlText.value);
+        if (!parsed || typeof parsed !== 'object') {
+          yamlError.value = 'Not a valid YAML mapping';
+        } else if (!parsed.normal && !parsed.emergency) {
+          yamlError.value = 'Missing normal: or emergency: keys';
+        } else {
+          yamlError.value = '';
+        }
+      } catch (e) {
+        // js-yaml gives line numbers and context
+        const msg = e.message.replace(/\n[\s\S]*/,'').trim();
+        yamlError.value = msg;
+      }
+    }
+
+    function formatYaml() {
+      syncMetaToYaml();
+      showToast('Meta synced to YAML');
+    }
+
+    // ── Generate ───────────────────────────────────────────────────
+    async function generate() {
+      status.value = 'loading';
+      statusMsg.value = 'Generating PDF…';
+      if (pdfUrl.value) { URL.revokeObjectURL(pdfUrl.value); pdfUrl.value = ''; }
+
+      // Build query string from opts
+      const q = new URLSearchParams();
+      q.set('scale',        opts.value.scale);
+      q.set('line_spacing', opts.value.line_spacing);
+      q.set('columns',      opts.value.columns);
+      q.set('fold',         opts.value.fold);
+      q.set('col_gap',      opts.value.col_gap);
+      q.set('outer_margin', opts.value.outer_margin);
+      q.set('font',         opts.value.font);
+      if (opts.value.monospaced) q.set('monospaced', '1');
+
+      const url = `${serverUrl.value.replace(/\/$/,'')}/generate?${q}`;
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/yaml' },
+          body: yamlText.value,
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: res.statusText }));
+          throw new Error(err.details || err.error || res.statusText);
+        }
+
+        const blob = await res.blob();
+        pdfBlob.value = blob;
+        pdfUrl.value  = URL.createObjectURL(blob) + '#toolbar=0';
+        status.value  = 'ok';
+        statusMsg.value = `PDF ready — ${(blob.size/1024).toFixed(1)} KB`;
+        showToast('PDF generated successfully');
+      } catch (e) {
+        status.value  = 'error';
+        statusMsg.value = `Error: ${e.message}`;
+        showToast(e.message, 'error');
+      }
+    }
+
+    // ── Download ───────────────────────────────────────────────────
+    function downloadPdf() {
+      if (!pdfBlob.value) return;
+      const name = [meta.value.callsign, meta.value.icao_type]
+        .filter(Boolean).join('-').replace(/\s+/g,'_') || 'checklist';
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(pdfBlob.value);
+      a.download = `checklist-${name}.pdf`;
+      a.click();
+    }
+
+    // ── Import / Export ────────────────────────────────────────────
+    function triggerImport() { fileInput.value.click(); }
+
+    function onFileImport(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        yamlText.value = ev.target.result;
+        onYamlEdit();
+        showToast(`Imported: ${file.name}`);
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    }
+
+    function exportYaml() {
+      syncMetaToYaml();
+      const name = [meta.value.callsign, meta.value.icao_type]
+        .filter(Boolean).join('-').replace(/\s+/g,'_') || 'checklist';
+      const blob = new Blob([yamlText.value], { type: 'application/yaml' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${name}.yaml`;
+      a.click();
+      showToast(`Exported: ${name}.yaml`);
+    }
+
+    // ── Templates ──────────────────────────────────────────────────
+    function loadTemplate(name) {
+      yamlText.value = TEMPLATES[name];
+      onYamlEdit();
+      pdfUrl.value = '';
+      pdfBlob.value = null;
+      status.value = 'idle';
+      statusMsg.value = '';
+      showToast(`Template loaded: ${name}`);
+    }
+
+
+    onMounted(() => {
+      onYamlEdit();
+      checkHealth();
+    });
+
+    function syncScroll() {
+      if (lineNumbers.value && editorTextarea.value) {
+        lineNumbers.value.scrollTop = editorTextarea.value.scrollTop;
+      }
+    }
+
+    async function checkHealth() {
+      healthStatus.value = 'loading';
+      healthText.value   = 'checking…';
+      try {
+        const res = await fetch(`${serverUrl.value}/health`);
+        if (res.ok) {
+          const j = await res.json();
+          healthStatus.value = j.status === 'ok' ? 'ok' : 'error';
+          healthText.value   = j.status === 'ok' ? 'backend ok' : 'backend degraded';
+        } else {
+          throw new Error(res.statusText);
+        }
+      } catch {
+        healthStatus.value = 'error';
+        healthText.value   = 'backend unreachable';
+      }
+    }
+
+    return {
+      yamlText, yamlError, yamlLineCount,
+      pdfUrl, status, statusMsg,
+      meta, opts,
+      fileInput, toast, showHelp,
+      healthStatus, healthText,
+      editorTextarea, lineNumbers, lineNumbersText,
+      syncScroll,
+      previewHeight,
+      syncMetaToYaml, onYamlEdit, formatYaml,
+      onFontChange,
+      generate, downloadPdf,
+      triggerImport, onFileImport, exportYaml,
+      loadTemplate,
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

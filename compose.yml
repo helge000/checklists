@@ -1,0 +1,35 @@
+services:
+
+  checklist:
+    build: .
+    restart: unless-stopped
+    expose:
+      - "5000"
+    volumes:
+      - ./public:/app/public:ro
+    healthcheck:
+      test: ["CMD", "python3", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    command: caddy reverse-proxy --from checklists.helgenberger.net --to checklist:5000
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      checklist:
+        condition: service_healthy
+
+volumes:
+  caddy_data:
+  caddy_config:
