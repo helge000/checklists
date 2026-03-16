@@ -485,5 +485,11 @@ for col_data in data.get("emergency", []):
     for section in col_data.get("sections", []):
         cy = render_section(section, cx, cy, COL_W, default_type="emergency")
 
+# ── Generated-by watermark (bottom-left) ─────────────────────────────────────
+c.setFont(FONT_NORMAL, 4.5)
+c.setFillColor(colors.HexColor("#aaaaaa"))
+c.drawString(OUTER_MARGIN, OUTER_MARGIN * 0.45,
+             "Generated using https://checklists.helgenberger.net/")
+
 c.save()
 print(f"✓  Generated: {output_file}")
