@@ -12,15 +12,14 @@ FROM python:3.12-slim
 # ── System dependencies ───────────────────────────────────────────────────────
 # fonts-liberation  → Arial-compatible TTF (Liberation Sans)
 # fonts-dejavu-core → DejaVu Sans / Condensed / Mono
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        fonts-liberation \
-        fonts-dejavu-core \
-    && fc-cache -f \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends curl fontconfig fonts-liberation fonts-dejavu-core \
+  && fc-cache -f \
+  && rm -rf /var/lib/apt/lists/*
 
 # ── Non-root service user ─────────────────────────────────────────────────────
 RUN groupadd --gid 1000 checklist \
- && useradd  --uid 1000 --gid checklist --no-create-home --shell /usr/sbin/nologin checklist
+  && useradd  --uid 1000 --gid checklist --no-create-home --shell /usr/sbin/nologin checklist
 
 # ── App directory ─────────────────────────────────────────────────────────────
 WORKDIR /app
