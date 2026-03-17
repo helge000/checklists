@@ -1,0 +1,118 @@
+meta:
+  callsign: "DEADX PREFLIGHT"
+  icao_type: "DA40"
+  model: "Diamond DA40D CD155"
+  revision: "Rev 1"
+  columns: 4
+  font: dejavu-condensed
+  scale: 1.2
+  line_spacing: 1.35
+  fold_margin_mm: 8
+  col_gap_mm: 3
+  outer_margin_mm: 8
+normal:
+  - col: 1
+    sections:
+      - title: PREFLIGHT INTERIOR
+        items:
+          - Aircraft papers: CHECK
+          - Pitot cover: REMOVED
+          - Interior for foreign objects: CHECK
+          - Flight controls: FREE
+          - Circuit breakers: CHECK
+          - Emergency Fuel Valve: NORMAL
+          - Engine Master: 'OFF'
+          - ECU SWAP: AUTO
+          - Essential Bus: 'OFF'
+          - Emergency Switch: 'OFF'
+          - All avionics / electrics: 'OFF'
+          - Electric Master: 'ON'
+          - Battery voltage: CHECK
+          - Fuel quantity + temp: CHECK
+          - External lights: 'ON'
+          - Pitot heat: 'ON'
+          - Parking brake: SET
+          - Stall warning: CHECK
+          - Pitot heat: CHECK
+          - External lights: CHECK
+          - Electric Master: 'OFF'
+          - Key: REMOVED
+        header_color: yellow
+      - title: LEFT MAIN GEAR
+        items:
+          - Wheel fairing: CHECK
+          - Tire condition / pressure 2.5 bar: CHECK
+          - Position mark: CHECK
+          - Brake / hydraulic line: CHECK
+        header_color: yellow
+      - title: LEFT WING
+        items:
+          - Leading edge / surfaces / stall strips: CHECK
+          - Fuel sump: DRAIN
+          - Stall warning: CHECK
+          - Fuel vent: CHECK
+          - Fuel filler cap: CHECK
+          - Pitot / static probe (cover removed): CHECK
+          - Wing tip / position light: CHECK
+          - Static dischargers: CHECK
+          - Aileron (movement / hinges / linkage): CHECK
+          - Wing flap: CHECK
+        header_color: yellow
+  - col: 2
+    sections:
+      - title: LEFT FUSELAGE
+        items:
+          - Canopy left side: CHECK
+          - Rear door: CHECK
+          - Fuselage left side: CHECK
+          - Antennas: CHECK
+        header_color: yellow
+      - title: TAIL
+        items:
+          - Elevator + rudder (movement / hinges): CHECK
+          - Trim tab: CHECK
+          - Tail skid + lower fin: CHECK
+          - Static dischargers: CHECK
+        header_color: yellow
+      - title: RIGHT FUSELAGE
+        items:
+          - Fuselage right side: CHECK
+          - Rear window: CHECK
+          - Canopy right side: CHECK
+        header_color: yellow
+      - title: RIGHT WING
+        items:
+          - Wing flap: CHECK
+          - Aileron (movement / hinges / linkage): CHECK
+          - Static dischargers: CHECK
+          - Wing tip / position light: CHECK
+          - Leading edge / surfaces / stall strips: CHECK
+          - Fuel filler cap: CHECK
+          - Fuel vent: CHECK
+          - Fuel sump: DRAIN
+        header_color: yellow
+      - title: RIGHT MAIN GEAR
+        items:
+          - Wheel fairing: CHECK
+          - Tire condition / pressure 2.5 bar: CHECK
+          - Position mark: CHECK
+          - Brake / hydraulic line: CHECK
+        header_color: yellow
+      - title: NOSE SECTION
+        items:
+          - OAT sensor: CHECK
+          - Propeller surface: CHECK
+          - Spinner: CHECK
+          - Cowling / Air inlets (5): CHECK
+          - Nose gear wheel fairing: CHECK
+          - Tire condition / pressure 2.0 bar: CHECK
+          - Position mark: CHECK
+          - Engine oil level 4.5 – 6.0 l: CHECK
+          - Gearbox oil level: CHECK
+          - Fuel strainer: DRAIN
+          - Chocks: REMOVED
+          - Towbar: REMOVED
+        header_color: yellow
+emergency:
+  - col: 1
+    sections: []
