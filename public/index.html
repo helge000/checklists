@@ -313,10 +313,8 @@
   .ve-col { display: flex; flex-direction: column; gap: 6px; }
   .ve-col-header { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; padding: 2px 0; border-bottom: 1px solid var(--border); margin-bottom: 2px; display: flex; align-items: center; justify-content: space-between; }
   .ve-section { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-  .ve-section-header { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-bottom: 1px solid var(--border); }
-  .ve-section-header.emergency { border-left: 3px solid var(--red); }
-  .ve-section-header.speeds    { border-left: 3px solid var(--accent); }
-  .ve-section-header.normal    { border-left: 3px solid var(--muted); }
+  .ve-section-header { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-bottom: 1px solid rgba(0,0,0,.25); }
+  .ve-section-title  { color: #fff !important; }
   .ve-section-title { flex: 1; font-size: 11px; font-weight: 600; background: none; border: none; color: var(--text); font-family: var(--font-ui); padding: 2px 4px; border-radius: 3px; }
   .ve-section-title:focus { background: var(--bg3); outline: 1px solid var(--accent); }
   .ve-color-dots { display: inline-flex; gap: 3px; align-items: center; }
@@ -335,6 +333,9 @@
   .ve-item-style { font-size: 10px; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 2px 4px; cursor: pointer; white-space: nowrap; }
   .ve-item-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; line-height: 1; padding: 0 2px; }
   .ve-item-del:hover { color: var(--red); }
+  .ve-item.drag-over { outline: 2px dashed var(--accent); outline-offset: 1px; border-radius: 3px; }
+  .ve-item-drag { color: var(--muted); cursor: grab; font-size: 12px; user-select: none; line-height: 1; }
+  .ve-item-drag:active { cursor: grabbing; }
   .ve-add-item { font-size: 11px; color: var(--muted); background: none; border: 1px dashed var(--border); border-radius: 4px; padding: 3px 8px; cursor: pointer; width: 100%; text-align: left; margin-top: 2px; }
   .ve-add-item:hover { border-color: var(--accent); color: var(--accent); }
   .ve-add-section { font-size: 11px; color: var(--muted); background: none; border: 1px dashed var(--border); border-radius: 4px; padding: 4px 10px; cursor: pointer; width: 100%; text-align: left; }
@@ -346,7 +347,7 @@
   .ve-drag-handle { color: var(--muted); cursor: grab; padding: 0 4px; font-size: 14px; user-select: none; }
   .ve-drag-handle:active { cursor: grabbing; }
   .ve-select { font-size: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; color: var(--text); padding: 2px 4px; cursor: pointer; }
-  .ve-item { display: grid; grid-template-columns: 1fr auto 80px 70px auto; gap: 4px; align-items: center; }
+  .ve-item { display: grid; grid-template-columns: auto 1fr auto 80px 70px auto; gap: 4px; align-items: center; }
   /* toggle buttons */
   .editor-mode-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 4px 7px; cursor: pointer; display: inline-flex; align-items: center; }
   .editor-mode-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -564,7 +565,7 @@
                       @dragover.prevent="veDragOver($event)"
                       @dragleave="veDragLeave($event)"
                       @drop="veDrop('normal',ci,si,$event)">
-                      <div class="ve-section-header" :class="veSecClass(sec, 'normal')">
+                      <div class="ve-section-header" :style="veSecStyle(sec, 'normal')">
                         <span class="ve-drag-handle" title="Drag to reorder">⠿</span>
                         <input class="ve-section-title" v-model="sec.title" @input="veSave" placeholder="Section title"/>
                         <span class="ve-color-dots">
@@ -575,7 +576,13 @@
                         <button class="ve-del-section" @click="veRemoveSec('normal',ci,si)" title="Delete section">×</button>
                       </div>
                       <div class="ve-items">
-                        <div v-for="(item, ii) in sec.items" :key="ii" class="ve-item">
+                        <div v-for="(item, ii) in sec.items" :key="ii" class="ve-item"
+                          draggable="true"
+                          @dragstart="veItemDragStart(sec,ii,$event)"
+                          @dragover.prevent="veItemDragOver($event)"
+                          @dragleave="veItemDragLeave($event)"
+                          @drop="veItemDrop(sec,ii,$event)">
+                          <span class="ve-item-drag" title="Drag to reorder">⠿</span>
                           <input :value="veItemLabel(item)" @input="veSetLabel(item,$event.target.value)" placeholder="Label"/>
                           <span style="color:var(--muted);font-size:11px">→</span>
                           <input class="callout" :value="veItemCallout(item)" @input="veSetCallout(item,$event.target.value)" placeholder="callout"/>
@@ -607,13 +614,19 @@
                       @dragover.prevent="veDragOver($event)"
                       @dragleave="veDragLeave($event)"
                       @drop="veDrop('emergency',ci,si,$event)">
-                      <div class="ve-section-header emergency">
+                      <div class="ve-section-header" :style="veSecStyle(sec, 'emergency')">
                         <span class="ve-drag-handle" title="Drag to reorder">⠿</span>
                         <input class="ve-section-title" v-model="sec.title" @input="veSave" placeholder="Section title"/>
                         <button class="ve-del-section" @click="veRemoveSec('emergency',ci,si)" title="Delete section">×</button>
                       </div>
                       <div class="ve-items">
-                        <div v-for="(item, ii) in sec.items" :key="ii" class="ve-item">
+                        <div v-for="(item, ii) in sec.items" :key="ii" class="ve-item"
+                          draggable="true"
+                          @dragstart="veItemDragStart(sec,ii,$event)"
+                          @dragover.prevent="veItemDragOver($event)"
+                          @dragleave="veItemDragLeave($event)"
+                          @drop="veItemDrop(sec,ii,$event)">
+                          <span class="ve-item-drag" title="Drag to reorder">⠿</span>
                           <input :value="veItemLabel(item)" @input="veSetLabel(item,$event.target.value)" placeholder="Label"/>
                           <span style="color:var(--muted);font-size:11px">→</span>
                           <input class="callout" :value="veItemCallout(item)" @input="veSetCallout(item,$event.target.value)" placeholder="callout"/>
@@ -1315,11 +1328,18 @@ createApp({
       editorMode.value = mode;
     }
 
-    function veSecClass(sec, half) {
-      if (sec.type === 'speeds') return 'speeds';
-      if (half === 'emergency') return 'emergency';
-      return sec.header_color || 'normal';
+    const VE_HDR_COLORS = {
+      black:  '#333333',
+      blue:   '#2f5496',
+      green:  '#4e7a3a',
+      yellow: '#b8860b',
+    };
+    function veSecStyle(sec, half) {
+      if (half === 'emergency') return { background: '#c00000' };
+      if (sec.type === 'speeds')  return { background: '#2f5496' };
+      return { background: VE_HDR_COLORS[sec.header_color || 'black'] || '#333' };
     }
+    function veSecClass(sec, half) { return ''; } // kept for compat
 
     function veItemLabel(item) {
       if (typeof item === 'string') return item;
@@ -1416,7 +1436,34 @@ createApp({
     }
 
     // drag-and-drop state
-    let _dragHalf = null, _dragCi = null, _dragSi = null;
+    // item-level drag state (separate from section drag)
+    let _itemDragSec = null, _itemDragIdx = null;
+    function veItemDragStart(sec, ii, ev) {
+      _itemDragSec = sec; _itemDragIdx = ii;
+      ev.dataTransfer.effectAllowed = 'move';
+      ev.stopPropagation(); // don't trigger section drag
+    }
+    function veItemDragOver(ev) {
+      ev.currentTarget.classList.add('drag-over');
+      ev.stopPropagation();
+    }
+    function veItemDragLeave(ev) {
+      ev.currentTarget.classList.remove('drag-over');
+    }
+    function veItemDrop(sec, ii, ev) {
+      ev.currentTarget.classList.remove('drag-over');
+      ev.stopPropagation();
+      if (!_itemDragSec || _itemDragIdx === null) return;
+      if (_itemDragSec !== sec) return; // cross-section moves not supported
+      const from = _itemDragIdx, to = ii;
+      _itemDragSec = null; _itemDragIdx = null;
+      if (from === to) return;
+      const [moved] = sec.items.splice(from, 1);
+      sec.items.splice(to, 0, moved);
+      veSave();
+    }
+
+        let _dragHalf = null, _dragCi = null, _dragSi = null;
     function veDragStart(half, ci, si, ev) {
       _dragHalf = half; _dragCi = ci; _dragSi = si;
       ev.currentTarget.classList.add('dragging');
@@ -1457,10 +1504,11 @@ createApp({
       meta, opts,
       fileInput, toast, showHelp,
       editorMode, veData, setEditorMode,
-      veSecClass, veItemLabel, veItemCallout, veSetLabel, veSetCallout,
+      veSecClass, veSecStyle, veItemLabel, veItemCallout, veSetLabel, veSetCallout,
       veAddItem, veRemoveItem, veAddSection, veRemoveSec, veAddCol, veRemoveCol,
       veItemStyle, veSetStyle, veSetHdrColor,
       veDragStart, veDragOver, veDragLeave, veDrop,
+      veItemDragStart, veItemDragOver, veItemDragLeave, veItemDrop,
       healthStatus, healthText,
       editorTextarea, lineNumbers, lineNumbersText,
       syncScroll,
