@@ -1094,7 +1094,8 @@ createApp({
     // When served via server.py the UI and API share the same origin.
     const serverUrl = ref(`${window.location.protocol}//${window.location.host}`);
 
-    const yamlText  = ref(TEMPLATES.minimal);
+    const _cached  = (() => { try { return localStorage.getItem('checklist_yaml_cache') || null; } catch{} return null; })();
+    const yamlText  = ref(_cached || TEMPLATES.minimal);
     const yamlError = ref('');
     const pdfUrl    = ref('');
     const pdfBlob   = ref(null);
@@ -1153,6 +1154,7 @@ createApp({
 
     // ── Parse YAML edit → update sidebar ──────────────────────────
     function onYamlEdit() {
+      try { localStorage.setItem('checklist_yaml_cache', yamlText.value); } catch{}
       validateYaml();
       const m = extractMeta(yamlText.value);
       if (m.callsign) meta.value.callsign = m.callsign;
@@ -1284,6 +1286,7 @@ createApp({
 
     // ── Templates ──────────────────────────────────────────────────
     function loadTemplate(name) {
+      try { localStorage.removeItem('checklist_yaml_cache'); } catch{}
       yamlText.value = TEMPLATES[name];
       onYamlEdit();
       pdfUrl.value = '';
