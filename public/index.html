@@ -32,14 +32,16 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
   /* ── Layout ───────────────────────────────────────────────────── */
-  .app { display: grid; grid-template-rows: 56px 1fr 36px; height: 100vh; }
+  .app { display: grid; grid-template-rows: 72px 1fr 36px; height: 100vh; }
 
   .topbar {
     background: var(--bg2);
     border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 16px; padding: 0 24px;
+    display: flex; flex-direction: column; align-items: stretch;
     position: sticky; top: 0; z-index: 100;
   }
+  .topbar-row { display: flex; align-items: center; gap: 12px; padding: 0 24px; height: 36px; }
+  .topbar-row + .topbar-row { border-top: 1px solid var(--border); }
   .topbar-logo {
     display: flex; align-items: center; gap: 10px;
     font-weight: 600; font-size: 15px; letter-spacing: .02em;
@@ -47,7 +49,7 @@
   .topbar-logo svg { color: var(--accent); }
   .topbar-spacer { flex: 1; }
 
-  .main { display: grid; grid-template-columns: 340px 1fr; overflow: hidden; }
+  .main { display: grid; grid-template-columns: 1fr; overflow: hidden; }
 
   /* ── Sidebar ──────────────────────────────────────────────────── */
   .sidebar {
@@ -353,6 +355,16 @@
   .editor-mode-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
   .editor-mode-toggle { display: inline-flex; gap: 2px; }
 
+
+  /* ── Setup modal ──────────────────────────────────────────────── */
+  .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .setup-section { display: flex; flex-direction: column; gap: 10px; }
+  .setup-section-title {
+    font-size: 10px; font-weight: 600; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 2px;
+    border-bottom: 1px solid var(--border); padding-bottom: 6px;
+  }
+
   /* scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -365,19 +377,20 @@
 
     <!-- ── Topbar ─────────────────────────────────────────────── -->
     <div class="topbar">
-      <div class="topbar-logo">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-          <polyline points="10 9 9 9 8 9"/>
-        </svg>
-        Aviation Checklist Generator
-      </div>
-      <span style="font-size:11px;color:var(--muted);margin-left:4px;">Create your own paper checklist</span>
-      <div class="topbar-spacer"></div>
-      <div class="btn-group">
+      <!-- Row 1: logo + secondary actions -->
+      <div class="topbar-row">
+        <div class="topbar-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          Aviation Checklist Generator
+        </div>
+        <span style="font-size:11px;color:var(--muted)">Create your own paper checklist</span>
+        <div class="topbar-spacer"></div>
         <button class="btn btn-ghost btn-sm" @click="showHelp=true">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           Help
@@ -389,6 +402,14 @@
         <button class="btn btn-ghost btn-sm" @click="exportYaml">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Export YAML
+        </button>
+      </div>
+      <!-- Row 2: primary actions (right-aligned) -->
+      <div class="topbar-row">
+        <div class="topbar-spacer"></div>
+        <button class="btn btn-sm" @click="showSetup=true" style="background:#b8860b;color:#fff;border:none;font-weight:500">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Checklist Setup
         </button>
         <button class="btn btn-primary btn-sm" @click="generate" :disabled="status==='loading'">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -405,118 +426,7 @@
     <!-- ── Main grid ──────────────────────────────────────────── -->
     <div class="main">
 
-      <!-- Sidebar -->
-      <div class="sidebar">
 
-        <!-- Aircraft meta -->
-        <div class="sidebar-section">
-          <div class="sidebar-section-title">Aircraft</div>
-          <div class="form-row">
-            <label>Callsign</label>
-            <input type="text" v-model="meta.callsign" placeholder="D-EADX" @input="syncMetaToYaml"/>
-          </div>
-          <div class="grid-2">
-            <div class="form-row">
-              <label>ICAO Type</label>
-              <input type="text" v-model="meta.icao_type" placeholder="DA40" @input="syncMetaToYaml"/>
-            </div>
-            <div class="form-row">
-              <label>Revision</label>
-              <input type="text" v-model="meta.revision" placeholder="Rev 1" @input="syncMetaToYaml"/>
-            </div>
-          </div>
-          <div class="form-row">
-            <label>Model / Full name</label>
-            <input type="text" v-model="meta.model" placeholder="Diamond DA40 D TDI" @input="syncMetaToYaml"/>
-          </div>
-        </div>
-
-        <!-- Layout -->
-        <div class="sidebar-section">
-          <div class="sidebar-section-title">Layout</div>
-
-          <div class="form-row">
-            <label>Columns per half</label>
-            <div style="display:flex;gap:8px">
-              <button class="btn btn-sm" :class="opts.columns===4 ? 'btn-primary' : 'btn-ghost'"
-                @click="opts.columns=4; syncMetaToYaml()" style="flex:1">
-                2 per half<br><span style="font-size:10px;opacity:.7">4 total</span>
-              </button>
-              <button class="btn btn-sm" :class="opts.columns===6 ? 'btn-primary' : 'btn-ghost'"
-                @click="opts.columns=6; syncMetaToYaml()" style="flex:1">
-                3 per half<br><span style="font-size:10px;opacity:.7">6 total</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="form-row">
-              <label>Fold margin <span class="unit">mm</span></label>
-              <div class="range-row">
-                <input type="range" min="0" max="20" step="0.5" v-model.number="opts.fold" @input="syncMetaToYaml"/>
-                <div class="range-val">{{ opts.fold }}</div>
-              </div>
-            </div>
-            <div class="form-row">
-              <label>Col gap <span class="unit">mm</span></label>
-              <div class="range-row">
-                <input type="range" min="0" max="10" step="0.5" v-model.number="opts.col_gap" @input="syncMetaToYaml"/>
-                <div class="range-val">{{ opts.col_gap }}</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <label>Outer margin <span class="unit">mm</span></label>
-            <div class="range-row">
-              <input type="range" min="4" max="25" step="0.5" v-model.number="opts.outer_margin" @input="syncMetaToYaml"/>
-              <div class="range-val">{{ opts.outer_margin }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Typography -->
-        <div class="sidebar-section">
-          <div class="sidebar-section-title">Typography</div>
-
-          <div class="form-row">
-            <label>Font family</label>
-            <select v-model="opts.font" @change="onFontChange">
-              <option value="arial">Arial (Liberation Sans)</option>
-              <option value="dejavu">DejaVu Sans</option>
-              <option value="dejavu-condensed">DejaVu Sans Condensed</option>
-              <option value="dejavu-mono">DejaVu Sans Mono</option>
-            </select>
-          </div>
-
-
-          <div class="form-row">
-            <label>Scale <span class="unit">multiplier</span></label>
-            <div class="range-row">
-              <input type="range" min="0.6" max="1.8" step="0.05" v-model.number="opts.scale" @input="syncMetaToYaml"/>
-              <div class="range-val">{{ opts.scale.toFixed(2) }}</div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <label>Line spacing <span class="unit">multiplier</span></label>
-            <div class="range-row">
-              <input type="range" min="1.0" max="2.5" step="0.05" v-model.number="opts.line_spacing" @input="syncMetaToYaml"/>
-              <div class="range-val">{{ opts.line_spacing.toFixed(2) }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick templates -->
-        <div class="sidebar-section">
-          <div class="sidebar-section-title">Quick Start</div>
-          <button class="btn btn-ghost btn-sm" @click="loadTemplate('minimal')" style="width:100%;justify-content:flex-start">
-            📋 Load blank template
-          </button>
-        </div>
-
-
-      </div><!-- /sidebar -->
 
       <!-- Editor pane -->
       <div class="editor-pane">
@@ -698,6 +608,126 @@
   <!-- Toast -->
   <div v-if="toast.visible" class="toast" :class="toast.type">
     {{ toast.msg }}
+  </div>
+
+  <!-- ── Setup modal ─────────────────────────────────────────────── -->
+  <div v-if="showSetup" class="modal-overlay" @click.self="showSetup=false">
+    <div class="modal" style="max-width:640px">
+      <div class="modal-header">
+        <h2>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;vertical-align:middle"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Checklist Setup
+        </h2>
+        <button class="modal-close" @click="showSetup=false">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="setup-grid">
+
+          <!-- Left col: Aircraft + Quick Start -->
+          <div>
+            <div class="setup-section">
+              <div class="setup-section-title">Aircraft</div>
+              <div class="form-row">
+                <label>Callsign</label>
+                <input type="text" v-model="meta.callsign" placeholder="D-EADX" @input="syncMetaToYaml"/>
+              </div>
+              <div class="grid-2">
+                <div class="form-row">
+                  <label>ICAO Type</label>
+                  <input type="text" v-model="meta.icao_type" placeholder="DA40" @input="syncMetaToYaml"/>
+                </div>
+                <div class="form-row">
+                  <label>Revision</label>
+                  <input type="text" v-model="meta.revision" placeholder="Rev 1" @input="syncMetaToYaml"/>
+                </div>
+              </div>
+              <div class="form-row">
+                <label>Model / Full name</label>
+                <input type="text" v-model="meta.model" placeholder="Diamond DA40 D TDI" @input="syncMetaToYaml"/>
+              </div>
+            </div>
+
+            <div class="setup-section" style="margin-top:20px">
+              <div class="setup-section-title">Quick Start</div>
+              <button class="btn btn-ghost btn-sm" @click="loadTemplate('minimal');showSetup=false" style="width:100%;justify-content:flex-start">
+                📋 Load blank template
+              </button>
+            </div>
+          </div>
+
+          <!-- Right col: Layout + Typography -->
+          <div>
+            <div class="setup-section">
+              <div class="setup-section-title">Layout</div>
+              <div class="form-row">
+                <label>Columns per half</label>
+                <div style="display:flex;gap:8px">
+                  <button class="btn btn-sm" :class="opts.columns===4 ? 'btn-primary' : 'btn-ghost'"
+                    @click="opts.columns=4; syncMetaToYaml()" style="flex:1">
+                    2 per half<br><span style="font-size:10px;opacity:.7">4 total</span>
+                  </button>
+                  <button class="btn btn-sm" :class="opts.columns===6 ? 'btn-primary' : 'btn-ghost'"
+                    @click="opts.columns=6; syncMetaToYaml()" style="flex:1">
+                    3 per half<br><span style="font-size:10px;opacity:.7">6 total</span>
+                  </button>
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="form-row">
+                  <label>Fold margin <span class="unit">mm</span></label>
+                  <div class="range-row">
+                    <input type="range" min="0" max="20" step="0.5" v-model.number="opts.fold" @input="syncMetaToYaml"/>
+                    <div class="range-val">{{ opts.fold }}</div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <label>Col gap <span class="unit">mm</span></label>
+                  <div class="range-row">
+                    <input type="range" min="0" max="10" step="0.5" v-model.number="opts.col_gap" @input="syncMetaToYaml"/>
+                    <div class="range-val">{{ opts.col_gap }}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <label>Outer margin <span class="unit">mm</span></label>
+                <div class="range-row">
+                  <input type="range" min="4" max="25" step="0.5" v-model.number="opts.outer_margin" @input="syncMetaToYaml"/>
+                  <div class="range-val">{{ opts.outer_margin }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setup-section" style="margin-top:20px">
+              <div class="setup-section-title">Typography</div>
+              <div class="form-row">
+                <label>Font family</label>
+                <select v-model="opts.font" @change="onFontChange">
+                  <option value="arial">Arial (Liberation Sans)</option>
+                  <option value="dejavu">DejaVu Sans</option>
+                  <option value="dejavu-condensed">DejaVu Sans Condensed</option>
+                  <option value="dejavu-mono">DejaVu Sans Mono</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label>Scale <span class="unit">multiplier</span></label>
+                <div class="range-row">
+                  <input type="range" min="0.6" max="1.8" step="0.05" v-model.number="opts.scale" @input="syncMetaToYaml"/>
+                  <div class="range-val">{{ opts.scale.toFixed(2) }}</div>
+                </div>
+              </div>
+              <div class="form-row">
+                <label>Line spacing <span class="unit">multiplier</span></label>
+                <div class="range-row">
+                  <input type="range" min="1.0" max="2.5" step="0.05" v-model.number="opts.line_spacing" @input="syncMetaToYaml"/>
+                  <div class="range-val">{{ opts.line_spacing.toFixed(2) }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ── Help modal ──────────────────────────────────────────────── -->
@@ -1078,6 +1108,7 @@ createApp({
     const healthStatus = ref('loading');
     const healthText   = ref('checking…');
     const showHelp   = ref(false);
+    const showSetup  = ref(false);
     const editorMode = ref('visual');   // 'yaml' | 'visual'
     const veData     = ref({ normal: [], emergency: [] });
 
@@ -1502,7 +1533,7 @@ createApp({
       yamlText, yamlError, yamlLineCount,
       pdfUrl, status, statusMsg,
       meta, opts,
-      fileInput, toast, showHelp,
+      fileInput, toast, showHelp, showSetup,
       editorMode, veData, setEditorMode,
       veSecClass, veSecStyle, veItemLabel, veItemCallout, veSetLabel, veSetCallout,
       veAddItem, veRemoveItem, veAddSection, veRemoveSec, veAddCol, veRemoveCol,
