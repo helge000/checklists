@@ -1391,6 +1391,20 @@ createApp({
       let startX     = 0;
       let startLeft  = 0;
 
+      // Set initial 50/50 split explicitly so iframe renders at correct width
+      const initSplit = () => {
+        const total   = body.getBoundingClientRect().width - 5;
+        if (total <= 0) { requestAnimationFrame(initSplit); return; }
+        const half    = total / 2;
+        const leftCol = resizer.previousElementSibling;
+        const rightCol = resizer.nextElementSibling;
+        leftCol.style.width  = half + 'px';
+        leftCol.style.flex   = 'none';
+        rightCol.style.width = half + 'px';
+        rightCol.style.flex  = 'none';
+      };
+      requestAnimationFrame(initSplit);
+
       resizer.addEventListener('mousedown', e => {
         dragging  = true;
         startX    = e.clientX;
@@ -1594,6 +1608,20 @@ createApp({
       let dragging   = false;
       let startX     = 0;
       let startLeft  = 0;
+
+      // Set initial 50/50 split explicitly so iframe renders at correct width
+      const initSplit = () => {
+        const total   = body.getBoundingClientRect().width - 5;
+        if (total <= 0) { requestAnimationFrame(initSplit); return; }
+        const half    = total / 2;
+        const leftCol = resizer.previousElementSibling;
+        const rightCol = resizer.nextElementSibling;
+        leftCol.style.width  = half + 'px';
+        leftCol.style.flex   = 'none';
+        rightCol.style.width = half + 'px';
+        rightCol.style.flex  = 'none';
+      };
+      requestAnimationFrame(initSplit);
 
       resizer.addEventListener('mousedown', e => {
         dragging  = true;
