@@ -449,8 +449,8 @@
             Sync meta → YAML
           </button>
           <div style="flex:1"></div>
-          <abbr v-if="yamlError" style="color:var(--red);font-size:11px;cursor:help;text-decoration:none" :title="yamlError">⚠ invalid YAML</abbr>
-          <span v-else style="color:var(--green);font-size:11px">✓ valid YAML</span>
+          <abbr v-if="yamlError && editorMode==='yaml'" style="color:var(--red);font-size:11px;cursor:help;text-decoration:none" :title="yamlError">⚠ invalid YAML</abbr>
+          <span v-else-if="editorMode==='yaml'" style="color:var(--green);font-size:11px">✓ valid YAML</span>
         </div>
 
         <div class="editor-body">
