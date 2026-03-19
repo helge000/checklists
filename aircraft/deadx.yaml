@@ -2,124 +2,138 @@ meta:
   callsign: "DEADX"
   icao_type: "DA40"
   model: "Diamond DA40 D TDI CD155"
-  revision: ""
+  revision: "REV 2 (19.03.2026)"
   columns: 6
   font: dejavu-condensed
   scale: 1.1
   line_spacing: 1.5
   fold_margin_mm: 8
-  col_gap_mm: 3.0
+  col_gap_mm: 3
   outer_margin_mm: 8
-
 normal:
   - col: 1
     sections:
-      - title: "BEFORE START"
+      - title: BEFORE START
         items:
           - Preflight check: COMPLETED
           - Hobbs: NOTED
           - Seat Belts: FASTENED
-          - Door / Canopy: "CLOSED & LOCKED"
+          - Door / Canopy: CLOSED & LOCKED
           - Power Lever: IDLE
           - Emer. Fuel Transf.: NORMAL
           - Trim Wheel: SET T/O
-          - AVIONIC MASTER: "OFF"
-          - ELEC MASTER: "ON"
-          - Strobe Lights: "ON"
+          - Fuel Transfer Switch: 'OFF'
+          - EMERGENCY SWITCH: CHECK OFF
+            style: blue
           - ESSENTIAL BUS: CHECK OFF
             style: blue
+          - AVIONIC MASTER: CHECK OFF
+            style: blue
+          - ELEC MASTER: 'ON'
+          - Strobe Lights: 'ON'
           - Fuel Quantity: CHECK
-          - Annunciator: CHECK
+          - Annunciator: PRESS BTN
+            style: blue
           - DZ Headset: TURN ON
           - SkyEcho: CHECK ON / GREEN
           - SkyDemon: FLY
-
-      - title: "ENGINE START"
+      - title: ENGINE START
         items:
           - Parking Brake: SET
           - Power Lever: CHECK IDLE
             style: blue
           - Prop Area: CLEAR
-          - Engine MASTER: "ON"
-          - Wait for Glow Ind.: "OFF"
-            style: note
+          - Engine MASTER: 'ON'
+          - style: note
+            'Annunciator: Wait for Glow Indicator off': null
           - START KEY: START
             style: blue
           - OIL Pressure: OUTSIDE RED
             style: blue
-          - No ALERTS: WITHIN 3 SEC
-            style: blue
           - SkyDemon: LOG ENGINE START
+          - style: blue
+            Annunciator: CHECK
+          - No alerts within 3sec: CALLOUT
+            style: note
+          - Engine / PT heat remain: CALLOUT
+            style: note
+          - 'ELEC TRIM FAIL - turn trim wheel ': CALLOUT
+            style: note
           - Throttle: IDLE 2 MIN
-
-      - title: "AFTER START"
+      - title: AFTER START
         items:
-          - AVIONIC MASTER: "ON"
+          - AVIONIC MASTER: 'ON'
           - ALTIMETER: SET (4×)
           - RADIOS: SET
           - AMP / VOLT: CHECK
           - Transponder: STBY
           - Circuit Breaker: IN
-
-      - title: "TAXI"
+          - Flaps: T/O - LDG - T/O - UP
+          - PT HEAT: ON / OFF
+          - Check Annunciator: CALLOUT
+            style: note
+      - title: TAXI
         items:
           - Toe Brakes: CHECK
           - Gyros and Instr.: CHECK
   - col: 2
     sections:
-      - title: "RUN UP"
+      - title: RUN UP
         header_color: blue
         items:
-          - Brakes: SET
-          - Power Lever: MAX 10s
+          - Brakes: HOLD
+            style: blue
           - Oil pressure: check green
-          - RPM: stabilizes 2240 - 2300 RPM
-          - Load: stabilizes 90% - 100 %
           - Power Lever: IDLE
           - Engine Instruments: IN LIMITS
-          - ECU TEST: "PRESS & HOLD"
+          - Annunciator: Engine Lt OFF
             style: blue
-          - Caution lights (ECU B, CAUTION) - flash:
+          - ECU TEST: PRESS & HOLD
+            style: blue
+          - Caution lights (ECU B, CAUTION) - flash: null
             style: note
-          - Propeller RPM - cycles through:
+          - Propeller RPM - cycles through: null
             style: note
-          - Caution lights (ECU A, CAUTION) - flash:
+          - Caution lights (ECU A, CAUTION) - flash: null
             style: note
-          - Propeller RPM - cycles through:
+          - Propeller RPM - cycles through: null
             style: note
-          - Caution lights - extinguish:
+          - Caution lights - extinguish: null
             style: note
-          - ECU BACKUP UNSAFE light extinguishes:
+          - ECU BACKUP UNSAFE light extinguishes: null
             style: note
           - ECU TEST: Release
-          - VOTER Switch: B – AUTO
-          - Engine RPM - no drop, smooth:
-            style: note
+            style: blue
+          - VOTER Switch: AUTO > B > AUTO
+            style: blue
+          - style: note
+            Engine RPM - change, then smooth idle: null
           - ALT AIR: CHECK
-
-      - title: "BEFORE TAKE OFF"
+            style: blue
+      - title: BEFORE TAKE OFF
         items:
           - Flight Controls: CHECK
+          - style: note
+            Check Fuel Caps tight left/right wing: null
           - Flight Instruments: SET
           - Radios: SET
           - Altimeter: SET
           - Flaps: AS REQ.
+            style: blue
           - Trim: SET
-          - T/O & Emer. Dep. Briefing: COMPLETE
+          - T/O & Em. Briefing: COMPLETE
           - Doors & Windows: SECURED
-          - Landing Light: "ON"
+          - Landing Light: 'ON'
           - Transponder: ALTITUDE
           - Parking Brake: RELEASED
-
-      - title: "TAKE OFF"
+      - title: TAKE OFF
         items:
           - Power Lever: MAX
           - Elevator: neutral
           - Rudder: right foot
           - Rotation: 55-59 KIAS
           - Climb speed: 66 KIAS
-
-      - title: "OPERATING SPEEDS [KIAS]"
+      - title: OPERATING SPEEDS [KIAS]
         type: speeds
         body_bg: true
         items:
@@ -133,227 +147,217 @@ normal:
           - Vno: 129
           - Vne: 178
           - Vapp: 78
-          - V best glide: 73
+          - Vref: '64'
+          - V best glide: '73'
             style: red
           - Max X-Wnd: 20
-
   - col: 3
     sections:
-      - title: "AFTER TAKE OFF"
+      - title: AFTER TAKE OFF
         header_color: green
         items:
           - Flaps: UP
           - Power: RED. AS REQ.
-          - Landing Light: "OFF"
-
-      - title: "CRUISE"
+          - Landing Light: 'OFF'
+      - title: CRUISE
         header_color: green
         items:
-          - Power: AS REQUIRED
-          - Fuel Transfer: AS REQUIRED
-
-      - title: "APPROACH"
+          - Power: AS REQ. (60%)
+          - Fuel Transfer: AS REQ.
+            style: blue
+          - style: note
+            'Annunciator: Fuel Transfer LT': CALLOUT
+          - style: note
+            Pump might be left ON (as req.): CALLOUT
+      - title: APPROACH
         header_color: green
         items:
-          - Flight Instruments: "CHECK & SET"
+          - Flight Instruments: CHECK & SET
           - Radios: SET
           - Approach Briefing: COMPLETE
           - Seat Belts: FASTENED
           - FLAPS: AS REQUIRED
-
-      - title: "AFTER LANDING"
+          - Power: AS REQ. (30%)
+      - title: AFTER LANDING
         header_color: yellow
         items:
           - Transponder: STBY
-          - Taxi Light: "OFF"
+          - Landing Light: 'OFF'
           - Flaps: UP
+            style: blue
           - Time: NOTED
-          - PITOT HEAT: "OFF"
-
-      - title: "PARKING"
+          - PITOT HEAT: 'OFF'
+            style: blue
+      - title: PARKING
         header_color: yellow
         items:
-          - Parking Brake: SET
+          - Parking Brake: AS REQ.
             style: blue
-          - TAXI LIGHT: "OFF"
-            style: blue
+          - TAXI LIGHT: 'OFF'
           - SkyDemon: LOG ON BLOCKS
           - Powerlever: IDLE 2 MIN
             style: blue
-          - AVIONICS MASTER: "OFF"
+          - AVIONICS MASTER: 'OFF'
             style: blue
-          - ENGINE MASTER: "OFF"
+          - ENGINE MASTER: 'OFF'
             style: blue
           - SkyDemon: LOG ENGINE STOP
-          - Strobe Lights: "OFF"
+          - Strobe Lights: 'OFF'
             style: blue
-          - ELECTR. MASTER: "OFF"
+          - ELECTR. MASTER: 'OFF'
             style: blue
-          - SkyEcho: "OFF"
           - Tach / Hobbs: NOTED
-          - Headset: "OFF"
-
+          - SkyEcho: 'OFF'
+          - DZ Headset: 'OFF'
 emergency:
   - col: 1
     sections:
-      - title: "ENGINE FAILURE AFTER T/O"
+      - title: ENGINE FAILURE AFTER T/O
         items:
           - Glide: ESTABLISH
           - Landing Site: SELECT
-          - EMERGENCY FUEL VALVE: "OFF"
-          - ENGINE MASTER: "OFF"
+          - EMERGENCY FUEL VALVE: 'OFF'
+          - ENGINE MASTER: 'OFF'
           - FLAPS: LDG
           - SEAT BELTS: FASTEN
-          - ELECTRIC MASTER: "OFF"
-
-      - title: "ENGINE FAILURE IN CRUISE"
+          - ELECTRIC MASTER: 'OFF'
+      - title: ENGINE FAILURE IN CRUISE
         items:
           - Glide: ESTABLISH
           - Landing Site: SELECT
-          - ENGINE MASTER: "OFF"
+          - ENGINE MASTER: 'OFF'
           - Power: IDLE
           - EMER FUEL VALVE: OPEN
           - ALTERNATE AIR: OPEN
-          - FUEL TRANSFER PUMP: "ON"
-          - AVIONIC MASTER: "OFF"
-          - ELECTRIC MASTER: "ON"
-          - ENGINE MASTER: "ON"
-          - ELECTRIC MASTER: "ON"
+          - FUEL TRANSFER PUMP: 'ON'
+          - AVIONIC MASTER: 'OFF'
+          - ELECTRIC MASTER: 'ON'
+          - ENGINE MASTER: 'ON'
+          - ELECTRIC MASTER: 'ON'
           - START KEY: START
             style: blue
-          - ENGINE RESTARTED?:
+          - ENGINE RESTARTED?: null
             style: centered
-          - YES → Land as soon as possible:
+          - YES → Land as soon as possible: null
             style: note
-          - NO →:
+          - NO →: null
             style: note
           - Mayday: TRANSMIT
             style: warn
-          - EMER FUEL VALVE: "OFF"
-          - ENG MASTER: "OFF"
+          - EMER FUEL VALVE: 'OFF'
+          - ENG MASTER: 'OFF'
           - FLAPS: LDG
           - SEAT BELTS: FASTEN
-          - ELEC MASTER: "OFF"
-
-      - title: "ENGINE FIRE DURING START"
+          - ELEC MASTER: 'OFF'
+      - title: ENGINE FIRE DURING START
         items:
-          - Emergency Fuel Valve: "OFF"
-          - FUEL PUMP: "OFF"
-          - ENGINE MASTER: "OFF"
-          - ELEC MASTER: "OFF"
+          - Emergency Fuel Valve: 'OFF'
+          - FUEL PUMP: 'OFF'
+          - ENGINE MASTER: 'OFF'
+          - ELEC MASTER: 'OFF'
           - CANOPY: OPEN
-          - EVACUATE:
+          - EVACUATE: null
             style: warn
-
-      - title: "ENGINE FIRE DURING TAXI"
+          - New item: CALLOUT
+      - title: ENGINE FIRE DURING TAXI
         items:
           - Airplane: STOP
-          - Emergency Fuel Valve: "OFF"
-          - ENGINE MASTER: "OFF"
-          - ELEC MASTER: "OFF"
+          - Emergency Fuel Valve: 'OFF'
+          - ENGINE MASTER: 'OFF'
+          - ELEC MASTER: 'OFF'
           - CANOPY: OPEN
-          - EVACUATE AIRCRAFT!:
+          - EVACUATE AIRCRAFT!: null
             style: warn
-
   - col: 2
     sections:
-      - title: "ENGINE FIRE IN FLIGHT"
+      - title: ENGINE FIRE IN FLIGHT
         items:
-          - CABIN HEAT: "OFF"
+          - CABIN HEAT: 'OFF'
           - Glide: ESTABLISH
           - Landing Site: SELECT
-          - EMER FUEL VALVE: "OFF"
+          - EMER FUEL VALVE: 'OFF'
           - POWER LEVER: MAX
           - Window: AS REQ.
           - Landing: NO ENGINE
           - Mayday: TRANSMIT
             style: warn
           - CANOPY: OPEN
-          - EVACUATE:
+          - EVACUATE: null
             style: warn
-
-      - title: "CABIN FIRE IN FLIGHT"
+      - title: CABIN FIRE IN FLIGHT
         items:
-          - EMER FUEL VALVE: "OFF"
-          - CABIN HEAT: "OFF"
-          - ENG MASTER: "OFF"
-          - ELEC MASTER: "OFF"
+          - EMER FUEL VALVE: 'OFF'
+          - CABIN HEAT: 'OFF'
+          - ENG MASTER: 'OFF'
+          - ELEC MASTER: 'OFF'
           - OPEN WINDOW: IF REQ.
-
-      - title: "ENGINE ROUGHNESS"
+      - title: ENGINE ROUGHNESS
         items:
           - POWER: MAX
           - ENGINE WARNING: CHECK
-          - ALT AIR: "ON"
+          - ALT AIR: 'ON'
           - FUEL MAIN TANK: CHECK
           - EMER FUEL VALVE: NORMAL
           - ECU SWAP: ECU B
-
-      - title: "ICING"
+      - title: ICING
         items:
-          - PITOT HEAT: "ON"
-          - CABIN HEAT: "ON"
+          - PITOT HEAT: 'ON'
+          - CABIN HEAT: 'ON'
           - AIR SUPPLY: DEFROST
           - POWER: INCREASE
           - ALT AIR: OPEN
           - Open Window: IF REQUIRED
-
-      - title: "SPIN RECOVERY"
+      - title: SPIN RECOVERY
         items:
           - POWER: IDLE
           - RUDDER: OPPOSITE
           - ELEVATOR: FULL FWD
           - AILERON: NEUTRAL
           - FLAPS: UP
-          - Pitch level:
+          - Pitch level: null
             style: warn
-
   - col: 3
     sections:
-      - title: "ELECTRICAL FAILURE"
+      - title: ELECTRICAL FAILURE
         items:
           - Circuit Breaker: CHECK
-          - ESSENTIAL BUS: "ON"
-          - IF NO ELECTRICAL POWER::
+          - ESSENTIAL BUS: 'ON'
+          - 'IF NO ELECTRICAL POWER:': null
             style: note
-          - EMERGENCY Switch: "ON"
-          - FLOOD LIGHT: "ON"
+          - EMERGENCY Switch: 'ON'
+          - FLOOD LIGHT: 'ON'
           - POWER: SET AS REQ.
-          - Reduce electrical load to min.:
+          - Reduce electrical load to min.: null
             style: note
-          - Expect flap drive fail – land ASAP:
+          - Expect flap drive fail – land ASAP: null
             style: warn
-
-      - title: "ELECTRICAL OVERLOAD / UNDERLOAD"
+      - title: ELECTRICAL OVERLOAD / UNDERLOAD
         items:
-          - ESSENTIAL BUS: "ON"
-          - Land as soon as practical:
+          - ESSENTIAL BUS: 'ON'
+          - Land as soon as practical: null
             style: warn
-
-      - title: "HIGH OIL TEMPERATURE"
+      - title: HIGH OIL TEMPERATURE
         items:
           - Oil Pressure: CHECK
-          - If Oil Press green::
+          - 'If Oil Press green:': null
             style: note
           - Power: REDUCE
           - Airspeed: INCREASE
           - Oil Temp: CHECK
-
-      - title: "LOW OIL PRESSURE"
+      - title: LOW OIL PRESSURE
         items:
           - Power: REDUCE
-          - Expect engine to fail – land ASAP:
+          - Expect engine to fail – land ASAP: null
             style: warn
-
-      - title: "HIGH OIL PRESSURE"
+      - title: HIGH OIL PRESSURE
         items:
           - Oil Temperature: CHECK
           - Coolant Temp.: CHECK
-          - If Oil Temp green::
+          - 'If Oil Temp green:': null
             style: note
-          - Expect wrong indication:
+          - Expect wrong indication: null
             style: note
-          - If Oil Temp red::
+          - 'If Oil Temp red:': null
             style: note
-          - Expect engine to fail – land ASAP:
+          - Expect engine to fail – land ASAP: null
             style: warn
