@@ -262,9 +262,10 @@ emergency:
         items:
           - Master Switch (ALT & BAT): 'OFF'
           - Cabin HT & Air Control Knobs: 'OFF'
-          - Fire Extinguisher: (if available) ACTIVATE
+          - Fire Extinguisher: ACTIVATE
           - Avionic Master: 'OFF'
-          - All Other Switches (except Magnetos): 'OFF'
+          - All Other Switches: 'OFF'
+          - Magnetos: LEAVE ON
           - IF FIRE HAS BEEN EXTINGUISHED: null
             style: centered_blue
           - Cabin Vents: OPEN
