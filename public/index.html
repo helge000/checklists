@@ -516,7 +516,10 @@
                     </div>
                     <button class="ve-add-section" @click="veAddSection('normal',ci)">+ section</button>
                   </div>
-                  <button class="ve-add-section" @click="veAddCol('normal')">+ column</button>
+                  <button class="ve-add-section" @click="veAddCol('normal')"
+                    :disabled="veData.normal.length >= opts.columns/2"
+                    :style="veData.normal.length >= opts.columns/2 ? 'opacity:.35;cursor:not-allowed' : ''"
+                    :title="veData.normal.length >= opts.columns/2 ? 'Max columns reached — change in Checklist Setup' : ''">+ column</button>
                 </div>
                 <div>
                   <div class="ve-half-label emergency">🔴 Emergency Procedures</div>
@@ -560,7 +563,10 @@
                     </div>
                     <button class="ve-add-section" @click="veAddSection('emergency',ci)">+ section</button>
                   </div>
-                  <button class="ve-add-section" @click="veAddCol('emergency')">+ column</button>
+                  <button class="ve-add-section" @click="veAddCol('emergency')"
+                    :disabled="veData.emergency.length >= opts.columns/2"
+                    :style="veData.emergency.length >= opts.columns/2 ? 'opacity:.35;cursor:not-allowed' : ''"
+                    :title="veData.emergency.length >= opts.columns/2 ? 'Max columns reached — change in Checklist Setup' : ''">+ column</button>
                 </div>
               </div>
             </div>
@@ -1508,7 +1514,12 @@ createApp({
       veSave();
     }
     function veAddCol(half) {
-      const cols = veData.value[half];
+      const cols    = veData.value[half];
+      const maxCols = opts.value.columns / 2;
+      if (cols.length >= maxCols) {
+        showToast(`Max ${maxCols} column(s) per half (set in Checklist Setup)`, 'error');
+        return;
+      }
       cols.push({ col: cols.length + 1, sections: [] });
       veSave();
     }
