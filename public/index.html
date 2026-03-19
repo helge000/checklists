@@ -144,11 +144,14 @@
   }
 
   .editor-body {
-    display: grid; grid-template-columns: 1fr 1fr;
-    overflow: hidden;
+    display: flex; overflow: hidden;
   }
-  .editor-col { display: flex; flex-direction: column; overflow: hidden; }
-  .editor-col + .editor-col { border-left: 1px solid var(--border); }
+  .editor-col { display: flex; flex-direction: column; overflow: hidden; min-width: 80px; }
+  .editor-resizer {
+    width: 5px; background: var(--border); cursor: col-resize; flex-shrink: 0;
+    transition: background .15s;
+  }
+  .editor-resizer:hover, .editor-resizer.dragging { background: var(--accent); }
 
   .editor-col-header {
     background: var(--bg2); border-bottom: 1px solid var(--border);
@@ -563,8 +566,10 @@
             </div>
           </div>
 
+          <div class="editor-resizer" id="editorResizer"></div>
+
           <!-- PDF preview -->
-          <div class="editor-col">
+          <div class="editor-col" id="previewCol">
             <div class="editor-col-header">
               PDF Preview
               <span v-if="pdfUrl" style="color:var(--green);font-size:10px">● live</span>
@@ -1376,7 +1381,50 @@ createApp({
     function veSecStyle(sec, half) {
       if (half === 'emergency') return { background: '#c00000' };
       if (sec.type === 'speeds')  return { background: '#2f5496' };
-      return { background: VE_HDR_COLORS[sec.header_color || 'black'] || '#333' };
+  
+    // ── Resizable split ──────────────────────────────────────────────────────
+    onMounted(() => {
+      const resizer  = document.getElementById('editorResizer');
+      if (!resizer) return;
+      const body     = resizer.parentElement;
+      let dragging   = false;
+      let startX     = 0;
+      let startLeft  = 0;
+
+      resizer.addEventListener('mousedown', e => {
+        dragging  = true;
+        startX    = e.clientX;
+        const leftCol = resizer.previousElementSibling;
+        startLeft = leftCol.getBoundingClientRect().width;
+        resizer.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        const dx       = e.clientX - startX;
+        const total    = body.getBoundingClientRect().width - 5; // subtract resizer width
+        const newLeft  = Math.min(Math.max(startLeft + dx, 120), total - 120);
+        const leftCol  = resizer.previousElementSibling;
+        const rightCol = resizer.nextElementSibling;
+        leftCol.style.width  = newLeft + 'px';
+        leftCol.style.flex   = 'none';
+        rightCol.style.width = (total - newLeft) + 'px';
+        rightCol.style.flex  = 'none';
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (!dragging) return;
+        dragging = false;
+        resizer.classList.remove('dragging');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      });
+    });
+
+    return { background: VE_HDR_COLORS[sec.header_color || 'black'] || '#333' };
     }
     function veSecClass(sec, half) { return ''; } // kept for compat
 
@@ -1536,6 +1584,49 @@ createApp({
         veSave();
       }
     }
+
+
+    // ── Resizable split ──────────────────────────────────────────────────────
+    onMounted(() => {
+      const resizer  = document.getElementById('editorResizer');
+      if (!resizer) return;
+      const body     = resizer.parentElement;
+      let dragging   = false;
+      let startX     = 0;
+      let startLeft  = 0;
+
+      resizer.addEventListener('mousedown', e => {
+        dragging  = true;
+        startX    = e.clientX;
+        const leftCol = resizer.previousElementSibling;
+        startLeft = leftCol.getBoundingClientRect().width;
+        resizer.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        const dx       = e.clientX - startX;
+        const total    = body.getBoundingClientRect().width - 5; // subtract resizer width
+        const newLeft  = Math.min(Math.max(startLeft + dx, 120), total - 120);
+        const leftCol  = resizer.previousElementSibling;
+        const rightCol = resizer.nextElementSibling;
+        leftCol.style.width  = newLeft + 'px';
+        leftCol.style.flex   = 'none';
+        rightCol.style.width = (total - newLeft) + 'px';
+        rightCol.style.flex  = 'none';
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (!dragging) return;
+        dragging = false;
+        resizer.classList.remove('dragging');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      });
+    });
 
     return {
       yamlText, yamlError, yamlLineCount,
