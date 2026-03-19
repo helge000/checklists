@@ -1,0 +1,276 @@
+meta:
+  callsign: "DEGMB"
+  icao_type: "C172"
+  model: "Reims/Cessna F172 P"
+  revision: "Rev.4 18.03.2026"
+  columns: 6
+  font: dejavu-condensed
+  scale: 1.05
+  line_spacing: 1.35
+  fold_margin_mm: 8
+  col_gap_mm: 3
+  outer_margin_mm: 8
+normal:
+  - col: 1
+    sections:
+      - title: COCKPIT PREPARATION
+        items:
+          - Preflight Inspection: COMPLETED
+          - Pitot Cover: REMOVED
+          - Mass & Balance: CHECKED
+          - Documents & Papers: ON BOARD
+          - Emergency Equipment: CHECKED
+          - Master Switch (ALT & BAT): 'OFF'
+          - All elect. Equipment: 'OFF'
+          - Circuit Breakers: CHECKED
+          - Parking Brake: TEST and SET
+          - Fuel Selector: BOTH
+          - Doors: CLOSED & SECURED
+          - Seats & Belts: ADJUSTED & LOCKED
+          - DZ Headset: TURN ON
+          - SkyEcho: CHECK ON / GREEN
+          - SkyDemon: FLY
+      - title: BEFORE START
+        items:
+          - Master Switch (ALT & BAT): 'ON'
+          - ATIS (received): AS REQUIRED
+          - Start Up Clearance: AS REQUIRED
+          - Beacon Light Switch: 'ON'
+      - title: STARTING ENGINE
+        items:
+          - Carb. Heat: (pushed) COLD
+          - Throttle Control: 0.3 cm OPEN
+          - Mixture Control: RICH
+          - style: note
+            Inject 2 up to 6 times maximum: null
+          - style: note
+            'Cold OAT: wait for fuel to evaporate': null
+          - Propeller Area: CLEAR
+          - Magnetos Switch: START
+            style: blue
+          - Oil Pressure: CHECKED
+            style: blue
+          - Throttles: 1000 RPM
+            style: blue
+          - Ammeters: CHECKED
+          - slightly positive: null
+            style: note
+          - Generator Warning Light: 'OFF'
+      - title: AFTER START
+        items:
+          - Avionic Master: 'ON'
+          - Altimeters: SET
+          - COM / NAV / GNS for Departure: SET
+          - GPS Flight Plan: AS REQUIRED
+          - Standby Flight Instrument: CHECKED
+          - Flight Controls: FREE and CORRECT
+          - Flap Operation: CHECKED & UP
+          - Taxi Light: AS REQUIRED
+          - Parking Brake: RELEASED
+      - title: TAXIING
+        items:
+          - Brakes: CHECKED
+          - Compass / Gyro / Horizon: CHECKED
+          - Turn Coordinator: CHECKED
+  - col: 2
+    sections:
+      - title: RUN UP
+        header_color: blue
+        items:
+          - Brakes: HOLD
+          - Engine Instruments: GREEN ARC
+          - Mixture Control: RICH
+          - Throttle Control: 1700 RPM
+            style: blue
+          - Magnetos (L/R): CHECKED
+            style: blue
+          - style: note
+            max. Drop 125 RPM / Diff. 50 RPM: null
+          - Carb. Heat: CHECKED
+            style: blue
+          - style: note
+            Check RPM drop! Rise -> Carb Icing!: null
+          - Engine Indicators: CHECKED
+            style: blue
+          - Ammeters: CHECKED
+            style: blue
+          - Throttle: IDLE then 1000 RPM
+      - title: BEFORE TAKE OFF
+        items:
+          - Autopilot (push AP button): ENGAGE
+          - Flight Controls: CHECK
+          - style: note
+            verify AP can be overpowered in pitch and roll: null
+          - A/P Trim Disc Button: PRESS
+          - style: note
+            verify AP disengages and aural alert is heard: null
+          - Flight Director: OFF / SET for T/O
+          - Flaps: 0° or 10°
+          - Thrust Lever Friction Control: ADJUST
+          - Trim: SET for T/O
+          - Doors & Windows: CLOSED
+          - Beacon: CHECKED ON
+          - Ldg.- / Nav-Lights: AS REQUIRED
+          - Transponder ACS: SET / CHECK
+          - T/O & Departure Briefing: PERFORMED
+          - Emergency Briefing: PERFORMED
+          - ATC Clearance: RECEIVED
+          - T/O Time: COPIED
+          - Instruments / Annunciations: CHECKED
+          - Heading bug: RWY HDG
+          - Pitot Heat: AS REQ.
+          - Parking Brake: RELEASED
+      - title: TAKE OFF
+        items:
+          - T/O POWER: '>2300 RPM'
+          - ENG. INSTRUMENTS: GREEN
+          - ROTATE: 65-60kn
+        header_color: green
+      - title: OPERATING SPEEDS [KIAS]
+        type: speeds
+        body_bg: true
+        items:
+          - Vr: 55
+          - Vx: 60
+          - Vy: 76
+          - Vno: 127
+          - style: red
+            Vne: 158
+          - Vfe 10°: 110
+          - Vfe 20°–30°: 85
+          - Vs: 44
+          - Vs0: 33
+          - style: red
+            V Best Glide: 65
+  - col: 3
+    sections:
+      - title: AFTER TAKE OFF
+        header_color: green
+        items:
+          - Flaps (min. 400 ft AGL): UP
+          - Climb Power: SET
+          - Mixture: RICH
+          - Landing Light: 'OFF'
+      - title: CRUISE
+        header_color: green
+        items:
+          - Throttle: AS REQ.
+          - Mixture: LEANED
+          - Altimeter QNH / STD: SET
+      - title: APPROACH
+        header_color: green
+        items:
+          - Altimeters QNH: SET
+          - COM / NAV / GNS: SET
+          - style: red
+            Vapp: 65–75 KIAS
+          - Approach Briefing: PERFORMED
+          - Seats & Belts: FASTENED
+          - Mixture: ADJUSTED
+          - Fuel Selector: BOTH
+          - Carb. Heat: 'ON'
+      - title: FINAL
+        header_color: green
+        items:
+          - Landing Light: 'ON'
+          - Carb. Heat: AS REQUIRED
+          - Mixture: RICH
+          - Flaps: SET
+          - Autopilot: DISENGAGE
+      - title: AFTER LANDING
+        header_color: yellow
+        items:
+          - Flaps: UP
+          - Carb. Heat: (pushed) COLD
+          - Transponder: SBY
+          - Pitot Heat: 'OFF'
+          - Ldg / Nav.-Lights: 'OFF'
+          - Landing Time: COPIED
+          - Flight Plan: CLOSED
+          - Taxi Light: AS REQUIRED
+      - title: PARKING
+        header_color: yellow
+        items:
+          - Parking Brake: AS REQUIRED
+          - SkyDemon: LOG ON BLOCKS
+          - Throttle Control: approx. 1000 RPM
+            style: blue
+          - Electrical Equipment: 'OFF'
+            style: blue
+          - Avionic Master: 'OFF'
+            style: blue
+          - Mixture: IDLE CUT-OFF
+            style: blue
+          - SkyDemon: LOG ENGINE STOP
+          - Magnetos: 'OFF'
+            style: blue
+          - Beacon: 'OFF'
+            style: blue
+          - Master Switch (Batt & Alt): 'OFF'
+            style: blue
+          - Control Lock: INSTALLED
+          - DZ Headset: TURN OFF
+          - SkyEcho: TURN OFF
+emergency:
+  - col: 1
+    sections:
+      - title: ENGINE FAILURE (AFTER TAKEOFF)
+        items:
+          - — NOSE DOWN —: null
+            style: centered
+          - Airspeed (Flaps UP): 65 KIAS
+            style: red
+          - Airspeed (Flaps 10°–FULL): 60 KIAS
+            style: red
+          - Shutoff Valve: 'OFF'
+          - Mixture Control: IDLE CUTOFF
+          - Magnetos Switch: (pull full out) OFF
+          - Wing Flaps: AS REQUIRED
+          - Master Switch (ALT & BAT): 'OFF'
+          - Cabin Door: UNLATCH
+          - style: warn
+            Land - strait ahead: null
+      - title: ENGINE FAILURE IN FLIGHT
+        items:
+          - (RESTART PROCEDURES): null
+            style: centered_blue
+          - Airspeed (max 100 KIAS): 65 KIAS
+            style: red
+          - Carb. Heat: WARM
+          - Fuel Selector: BOTH
+          - Mixture: RICH
+          - Magnetos Switch: BOTH
+          - style: note
+            or START if propeller is stopped: null
+          - Primer: (pushed) LOCKED
+  - col: 2
+    sections:
+      - title: ENGINE FIRE (IN FLIGHT)
+        items:
+          - Shutoff Valve: 'OFF'
+          - Mixture Control: IDLE CUTOFF
+          - Master Switch (ALT & BAT): 'OFF'
+          - Cabin HT & Air Control Knobs: 'OFF'
+          - Airspeed: 100 KIAS
+          - style: note
+            'if fire persists: increase speed': null
+          - to find incombustible mixture: CALLOUT
+            style: note
+          - style: warn
+            Forced Landing - EXECUTE: null
+      - title: ELECTRICAL FIRE (IN FLIGHT)
+        items:
+          - Master Switch (ALT & BAT): 'OFF'
+          - Cabin HT & Air Control Knobs: 'OFF'
+          - Fire Extinguisher: (if available) ACTIVATE
+          - Avionic Master: 'OFF'
+          - All Other Switches (except Magnetos): 'OFF'
+          - IF FIRE HAS BEEN EXTINGUISHED: null
+            style: centered_blue
+          - Cabin Vents: OPEN
+          - Cabin HT & Air Control Knobs: 'ON'
+          - Circuit Breakers: CHECK
+          - style: note
+            for OPEN circuits - do not reset: null
+          - Master Switch (ALT & BAT): 'ON'
+          - Avionic Master: 'ON'
