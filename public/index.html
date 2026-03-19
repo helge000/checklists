@@ -369,6 +369,15 @@
     border-bottom: 1px solid var(--border); padding-bottom: 6px;
   }
 
+
+  /* ── Help button first-load highlight ────────────────────────── */
+  @keyframes helpPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(79,142,247,.7); background: var(--accent); color: #fff; }
+    70%  { box-shadow: 0 0 0 8px rgba(79,142,247,0); background: var(--accent); color: #fff; }
+    100% { box-shadow: 0 0 0 0 rgba(79,142,247,0); background: transparent; color: var(--text); }
+  }
+  .help-highlight { animation: helpPulse 1s ease-out 3; border-radius: var(--radius); }
+
   /* scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -395,7 +404,7 @@
         </div>
         <span style="font-size:11px;color:var(--muted)">Create your own paper checklist</span>
         <div class="topbar-spacer"></div>
-        <button class="btn btn-ghost btn-sm" @click="showHelp=true">
+        <button class="btn btn-ghost btn-sm" @click="showHelp=true" ref="helpBtn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           Help
         </button>
@@ -1119,6 +1128,7 @@ createApp({
     const statusMsg = ref('');
 
     const fileInput      = ref(null);
+    const helpBtn        = ref(null);
     const editorTextarea = ref(null);
     const lineNumbers    = ref(null);
     const toast       = ref({ visible: false, msg: '', type: 'success' });
@@ -1317,6 +1327,11 @@ createApp({
       onYamlEdit();
       veParseYaml();
       checkHealth();
+      // Highlight Help button for 3s on first visit
+      if (!_cached && helpBtn.value) {
+        helpBtn.value.classList.add('help-highlight');
+        setTimeout(() => helpBtn.value && helpBtn.value.classList.remove('help-highlight'), 3000);
+      }
     });
 
     function syncScroll() {
@@ -1671,7 +1686,7 @@ createApp({
       yamlText, yamlError, yamlLineCount,
       pdfUrl, status, statusMsg,
       meta, opts,
-      fileInput, toast, showHelp, showSetup,
+      fileInput, helpBtn, toast, showHelp, showSetup,
       editorMode, veData, setEditorMode,
       veSecClass, veSecStyle, veItemLabel, veItemCallout, veSetLabel, veSetCallout,
       veAddItem, veRemoveItem, veAddSection, veRemoveSec, veAddCol, veRemoveCol,
