@@ -1,0 +1,84 @@
+meta:
+  callsign: "DE---"
+  icao_type: "TYPE"
+  model: "Aircraft Type / Variant"
+  revision: "Rev.1"
+  columns: 4
+  font: dejavu-condensed
+  scale: 1.0
+  line_spacing: 1.35
+  fold_margin_mm: 8
+  col_gap_mm: 3.0
+  outer_margin_mm: 8
+
+normal:
+  - col: 1
+    sections:
+      - title: "BEFORE START"
+        header_color: black
+        items:
+          - Normal item: CALLOUT
+          - AVIONIC MASTER: "OFF"
+          - Engine Start step: START
+            style: blue
+          - (sub-note / limit text):
+            style: note
+          - — CENTERED DIVIDER —:
+            style: centered
+          - ABM THRESHOLD:
+            style: centered_blue
+          - Critical Warning:
+            style: warn
+
+      - title: "RUN UP"
+        header_color: blue
+        items:
+          - Brakes: SET
+          - Throttle: 1800 RPM
+            style: blue
+          - (max. drop 175 RPM):
+            style: note
+
+  - col: 2
+    sections:
+      - title: "AFTER TAKE OFF"
+        header_color: green
+        items:
+          - Flaps: UP
+          - Power: RED. AS REQ.
+
+      - title: "OPERATING SPEEDS [KIAS]"
+        type: speeds
+        body_bg: true
+        items:
+          - Vr: 0
+          - Vx: 0
+          - Vy: 0
+          - Vs: 0
+          - Vne: 0
+            style: red
+          - V glide: 0
+            style: red
+
+emergency:
+  - col: 1
+    sections:
+      - title: "ENGINE FAILURE"
+        items:
+          - Glide: ESTABLISH
+          - Landing Site: SELECT
+          - ENGINE MASTER: "OFF"
+          - ELECTRIC MASTER: "OFF"
+          - Mayday: TRANSMIT
+            style: warn
+          - EVACUATE:
+            style: warn
+
+  - col: 2
+    sections:
+      - title: "ENGINE FIRE"
+        items:
+          - Fuel Shut-off: CLOSED
+          - Throttle: FULL FORWARD
+          - Land without engine:
+            style: warn
