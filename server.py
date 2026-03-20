@@ -55,6 +55,7 @@ import tempfile
 import subprocess
 import logging
 from pathlib import Path
+import yaml
 
 from flask import Flask, request, send_file, send_from_directory, jsonify
 
@@ -183,7 +184,7 @@ def list_examples():
         label = yaml_file.stem  # fallback
         try:
             with open(yaml_file) as f:
-                meta = (pyyaml.safe_load(f) or {}).get("meta", {})
+                meta = (yaml.safe_load(f) or {}).get("meta", {})
             callsign = meta.get("callsign", "")
             model    = meta.get("model", "")
             if callsign and model:
