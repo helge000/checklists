@@ -1324,6 +1324,32 @@ createApp({
     }
 
 
+    // ── Example checklists — fetched dynamically from server ────────────────
+    const examples        = ref([]);
+    const exampleSelected = ref('');
+
+    async function fetchExamples() {
+      try {
+        const res = await fetch(`${serverUrl.value}/examples`);
+        if (res.ok) examples.value = await res.json();
+      } catch { /* server may not have aircraft/ dir yet */ }
+    }
+
+    async function loadExample() {
+      const path = exampleSelected.value;
+      if (!path) return;
+      exampleSelected.value = '';
+      try {
+        const res = await fetch(`${serverUrl.value}/examples/${path}`);
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        yamlText.value = await res.text();
+        onYamlEdit();
+        veParseYaml();
+        showToast(`Loaded: ${path.split('/').pop()}`);
+      } catch (e) {
+        showToast(`Failed to load: ${e.message}`, 'error');
+      }
+    }
     onMounted(() => {
       onYamlEdit();
       veParseYaml();
@@ -1404,38 +1430,12 @@ createApp({
     function veSecStyle(sec, half) {
       if (half === 'emergency') return { background: '#c00000' };
       if (sec.type === 'speeds')  return { background: '#2f5496' };
-  
+      return { background: VE_HDR_COLORS[sec.header_color || 'black'] || '#333' };
+    }
+
     // ── Resizable split ──────────────────────────────────────────────────────
 
-    // ── Example checklists — fetched dynamically from server ────────────────
-    const examples        = ref([]);
-    const exampleSelected = ref('');
 
-    async function fetchExamples() {
-      try {
-        const res = await fetch(`${serverUrl.value}/examples`);
-        if (res.ok) examples.value = await res.json();
-      } catch { /* server may not have aircraft/ dir yet */ }
-    }
-
-    async function loadExample() {
-      const path = exampleSelected.value;
-      if (!path) return;
-      exampleSelected.value = '';
-      try {
-        const res = await fetch(`${serverUrl.value}/examples/${path}`);
-        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-        yamlText.value = await res.text();
-        onYamlEdit();
-        veParseYaml();
-        showToast(`Loaded: ${path.split('/').pop()}`);
-      } catch (e) {
-        showToast(`Failed to load: ${e.message}`, 'error');
-      }
-    }
-
-    return { background: VE_HDR_COLORS[sec.header_color || 'black'] || '#333' };
-    }
     function veSecClass(sec, half) { return ''; } // kept for compat
 
     function veItemLabel(item) {
