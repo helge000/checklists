@@ -457,6 +457,13 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             Sync meta → YAML
           </button>
+          <div style="position:relative;display:inline-flex;align-items:center">
+            <select class="ve-select" style="font-size:11px;padding:4px 8px;min-width:140px"
+              v-model="exampleSelected" @change="loadExample">
+              <option value="">Load existing checklist…</option>
+              <option v-for="e in examples" :key="e.path" :value="e.path">{{ e.category ? e.category + " / " : "" }}{{ e.name }}</option>
+            </select>
+          </div>
           <div style="flex:1"></div>
           <abbr v-if="yamlError && editorMode==='yaml'" style="color:var(--red);font-size:11px;cursor:help;text-decoration:none" :title="yamlError">⚠ invalid YAML</abbr>
           <span v-else-if="editorMode==='yaml'" style="color:var(--green);font-size:11px">✓ valid YAML</span>
@@ -672,12 +679,6 @@
               </div>
             </div>
 
-            <div class="setup-section" style="margin-top:20px">
-              <div class="setup-section-title">Quick Start</div>
-              <button class="btn btn-ghost btn-sm" @click="loadTemplate('minimal');showSetup=false" style="width:100%;justify-content:flex-start">
-                📋 Load blank template
-              </button>
-            </div>
           </div>
 
           <!-- Right col: Layout + Typography -->
@@ -1327,6 +1328,7 @@ createApp({
       onYamlEdit();
       veParseYaml();
       checkHealth();
+      fetchExamples();
       // Highlight Help button for 3s on first visit
       if (!_cached && helpBtn.value) {
         helpBtn.value.classList.add('help-highlight');
@@ -1404,6 +1406,34 @@ createApp({
       if (sec.type === 'speeds')  return { background: '#2f5496' };
   
     // ── Resizable split ──────────────────────────────────────────────────────
+
+    // ── Example checklists — fetched dynamically from server ────────────────
+    const examples        = ref([]);
+    const exampleSelected = ref('');
+
+    async function fetchExamples() {
+      try {
+        const res = await fetch(`${serverUrl.value}/examples`);
+        if (res.ok) examples.value = await res.json();
+      } catch { /* server may not have aircraft/ dir yet */ }
+    }
+
+    async function loadExample() {
+      const path = exampleSelected.value;
+      if (!path) return;
+      exampleSelected.value = '';
+      try {
+        const res = await fetch(`${serverUrl.value}/examples/${path}`);
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        yamlText.value = await res.text();
+        onYamlEdit();
+        veParseYaml();
+        showToast(`Loaded: ${path.split('/').pop()}`);
+      } catch (e) {
+        showToast(`Failed to load: ${e.message}`, 'error');
+      }
+    }
+
     return { background: VE_HDR_COLORS[sec.header_color || 'black'] || '#333' };
     }
     function veSecClass(sec, half) { return ''; } // kept for compat
@@ -1629,11 +1659,14 @@ createApp({
       });
     });
 
+
+
     return {
       yamlText, yamlError, yamlLineCount,
       pdfUrl, status, statusMsg,
       meta, opts,
       fileInput, helpBtn, toast, showHelp, showSetup,
+      examples, exampleSelected, loadExample, fetchExamples,
       editorMode, veData, setEditorMode,
       veSecClass, veSecStyle, veItemLabel, veItemCallout, veSetLabel, veSetCallout,
       veAddItem, veRemoveItem, veAddSection, veRemoveSec, veAddCol, veRemoveCol,
