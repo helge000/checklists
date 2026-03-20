@@ -138,6 +138,14 @@
     background: var(--bg2); border-bottom: 1px solid var(--border);
     display: flex; align-items: center; gap: 8px; padding: 0 16px;
   }
+  .editor-aircraft-info {
+    display: flex; align-items: baseline; gap: 8px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .editor-aircraft-info .callsign { font-weight: 700; color: var(--accent); }
+  .editor-aircraft-info .sep      { color: var(--muted); }
+  .editor-aircraft-info .model    { color: var(--muted); }
+
   .editor-toolbar-label {
     font-size: 11px; font-weight: 600; text-transform: uppercase;
     letter-spacing: .1em; color: var(--muted); margin-right: 4px;
@@ -417,8 +425,15 @@
           Export YAML
         </button>
       </div>
-      <!-- Row 2: primary actions (right-aligned) -->
+      <!-- Row 2: aircraft info left + primary actions right -->
       <div class="topbar-row">
+        <div v-if="meta.callsign || meta.icao_type" class="editor-aircraft-info" style="padding-left:4px">
+          <span class="callsign" style="font-size:14px">{{ meta.callsign }}</span>
+          <span v-if="meta.icao_type" class="sep">·</span>
+          <span v-if="meta.icao_type" style="font-size:13px">{{ meta.icao_type }}</span>
+          <span v-if="meta.model" class="sep">—</span>
+          <span v-if="meta.model" class="model" style="font-size:12px">{{ meta.model }}</span>
+        </div>
         <div class="topbar-spacer"></div>
         <button class="btn btn-sm" @click="showSetup=true" style="background:#b8860b;color:#fff;border:none;font-weight:500">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
