@@ -27,8 +27,8 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 SECRET      = os.environ.get("WEBHOOK_SECRET", "").encode()
-REPO_DIR    = Path(__file__).parent
-DEPLOY_SH   = REPO_DIR / "/deploy/deploy.sh"
+REPO_DIR    = Path(__file__).parent.parent
+DEPLOY_SH   = REPO_DIR / "deploy/deploy.sh"
 
 
 def _verify(secret: bytes, body: bytes, sig_header: str) -> bool:
