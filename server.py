@@ -180,10 +180,23 @@ def list_examples():
 
     results = []
     for yaml_file in sorted(aircraft_dir.glob("*.yaml")):
-        name = yaml_file.stem.replace("-", " ").replace("_", " ")
+        label = yaml_file.stem  # fallback
+        try:
+            with open(yaml_file) as f:
+                meta = (pyyaml.safe_load(f) or {}).get("meta", {})
+            callsign = meta.get("callsign", "")
+            model    = meta.get("model", "")
+            if callsign and model:
+                label = f"{callsign}  —  {model}"
+            elif callsign:
+                label = callsign
+            elif model:
+                label = model
+        except Exception:
+            pass
         results.append({
-            "path": yaml_file.name,
-            "name": name,
+            "path":  yaml_file.name,
+            "label": label,
         })
     return jsonify(results)
 

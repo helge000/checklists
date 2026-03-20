@@ -461,7 +461,7 @@
             <select class="ve-select" style="font-size:11px;padding:4px 8px;min-width:140px"
               v-model="exampleSelected" @change="loadExample">
               <option value="">Load existing checklist…</option>
-              <option v-for="e in examples" :key="e.path" :value="e.path">{{ e.category ? e.category + " / " : "" }}{{ e.name }}</option>
+              <option v-for="e in examples" :key="e.path" :value="e.path">{{ e.label }}</option>
             </select>
           </div>
           <div style="flex:1"></div>
