@@ -101,6 +101,15 @@ def _build_cmd(pdf_path: str, yaml_path: str) -> list[str]:
 
     return cmd
 
+# ── Error handlers ───────────────────────────────────────────────────────────
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify(error="not found", path=request.path), 404
+
+@app.before_request
+def log_request():
+    log.info("%s %s", request.method, request.path)
+
 # ── Routes ────────────────────────────────────────────────────────────────────
 @app.post("/generate")
 def generate():
@@ -170,16 +179,11 @@ def list_examples():
         return jsonify([])
 
     results = []
-    for yaml_file in sorted(aircraft_dir.rglob("*.yaml")):
-        rel = yaml_file.relative_to(aircraft_dir)
-        # Use parent dir as category, stem as display name
-        parts = rel.parts
-        category = parts[0] if len(parts) > 1 else ""
-        name     = yaml_file.stem.replace("-", " ").replace("_", " ")
+    for yaml_file in sorted(aircraft_dir.glob("*.yaml")):
+        name = yaml_file.stem.replace("-", " ").replace("_", " ")
         results.append({
-            "path":     str(rel).replace("\\", "/"),
-            "name":     name,
-            "category": category,
+            "path": yaml_file.name,
+            "name": name,
         })
     return jsonify(results)
 
