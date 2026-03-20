@@ -1,0 +1,27 @@
+checklists.helgenberger.net {
+    # GitHub webhook endpoint
+    handle /webhook {
+        reverse_proxy webhook:9000
+    }
+
+    # Everything else → checklist app
+    handle {
+        reverse_proxy checklist:5000
+    }
+
+    encode zstd gzip
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options    "nosniff"
+        X-Frame-Options           "DENY"
+        Referrer-Policy           "strict-origin-when-cross-origin"
+        -Server
+    }
+
+    log {
+        output stdout
+        format console
+        level  INFO
+    }
+}

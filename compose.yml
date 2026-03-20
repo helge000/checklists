@@ -15,6 +15,19 @@ services:
       retries: 3
       start_period: 10s
 
+  webhook:
+    build: ./deploy
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock    # restart checklist after pull
+      - ~/.ssh:/root/.ssh:ro
+    environment:
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
+    command: python3 deploy/webhook.py
+    expose:
+      - "9000"
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
@@ -22,8 +35,8 @@ services:
       - "80:80"
       - "443:443"
       - "443:443/udp"
-    command: caddy reverse-proxy --from checklists.helgenberger.net --to checklist:5000
     volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
