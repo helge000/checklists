@@ -7,6 +7,8 @@ services:
       - "5000"
     volumes:
       - ./public:/app/public:ro
+      - ./aircraft:/app/aircraft:ro
+      - ./server.py:/app/server.py:ro
     healthcheck:
       test: ["CMD", "python3", "-c",
              "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
