@@ -209,7 +209,9 @@ def index():
 
 @app.get("/<path:filename>")
 def static_files(filename):
-    """Serve any file from ./public/"""
+    """Serve any file from ./public/ — skip API paths."""
+    if filename.startswith("examples") or filename in ("health", "generate"):
+        return jsonify(error="not found"), 404
     pub = get_public_dir()
     if not pub.is_dir():
         return jsonify(error=f"Static dir not found: {pub}"), 404
