@@ -161,6 +161,42 @@ def health():
     ), 200 if gen_ok else 503
 
 
+
+@app.get("/examples")
+def list_examples():
+    """Return a list of YAML checklists found in ./aircraft/ subdirectories."""
+    aircraft_dir = Path(__file__).parent / "aircraft"
+    if not aircraft_dir.is_dir():
+        return jsonify([])
+
+    results = []
+    for yaml_file in sorted(aircraft_dir.rglob("*.yaml")):
+        rel = yaml_file.relative_to(aircraft_dir)
+        # Use parent dir as category, stem as display name
+        parts = rel.parts
+        category = parts[0] if len(parts) > 1 else ""
+        name     = yaml_file.stem.replace("-", " ").replace("_", " ")
+        results.append({
+            "path":     str(rel).replace("\\", "/"),
+            "name":     name,
+            "category": category,
+        })
+    return jsonify(results)
+
+
+@app.get("/examples/<path:filepath>")
+def get_example(filepath):
+    """Serve a YAML file from ./aircraft/."""
+    aircraft_dir = Path(__file__).parent / "aircraft"
+    # Security: resolve and ensure it stays within aircraft_dir
+    target = (aircraft_dir / filepath).resolve()
+    if not str(target).startswith(str(aircraft_dir.resolve())):
+        return jsonify(error="forbidden"), 403
+    if not target.exists() or target.suffix not in (".yaml", ".yml"):
+        return jsonify(error="not found"), 404
+    return send_file(target, mimetype="application/yaml")
+
+
 # ── Static file server ───────────────────────────────────────────────────────
 @app.get("/")
 def index():
