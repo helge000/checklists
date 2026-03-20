@@ -16,6 +16,7 @@ import json
 import logging
 import os
 import subprocess
+import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
@@ -88,7 +89,12 @@ class Handler(BaseHTTPRequestHandler):
                 log.info("Push event on %s", ref)
             except Exception:
                 pass
-            _deploy()
+            # Respond immediately — GitHub times out if we wait for the deploy
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"ok")
+            threading.Thread(target=_deploy, daemon=True).start()
+            return
 
         self.send_response(200)
         self.end_headers()
