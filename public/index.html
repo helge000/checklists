@@ -28,6 +28,53 @@
     --radius:    8px;
     --shadow:    0 4px 24px rgba(0,0,0,.4);
   }
+  :root.light {
+    --bg:        #f5f6f8;
+    --bg2:       #ffffff;
+    --bg3:       #eef0f4;
+    --border:    #d1d5db;
+    --accent:    #2563eb;
+    --accent2:   #7c3aed;
+    --green:     #16a34a;
+    --yellow:    #b45309;
+    --red:       #dc2626;
+    --text:      #111827;
+    --muted:     #6b7280;
+    --shadow:    0 4px 24px rgba(0,0,0,.12);
+  }
+  /* Fix items that hardcode dark colours in light mode */
+  :root.light .yaml-editor     { color: #1e293b; background: var(--bg); }
+  :root.light .line-numbers    { background: var(--bg3); color: var(--muted); }
+  :root.light .ve-section      { background: var(--bg2); }
+  :root.light .ve-item input   { background: var(--bg3); color: var(--text); }
+  :root.light .pdf-preview-wrap { background: #e5e7eb; }
+  :root.light textarea.yaml-editor { color: #1e293b; }
+  /* Toggle button */
+  .theme-switch {
+    display: inline-flex; align-items: center; cursor: pointer;
+    user-select: none;
+  }
+  .theme-switch-track {
+    width: 46px; height: 24px; border-radius: 12px;
+    border: 1.5px solid #475569; background: #1e293b;
+    position: relative; transition: background .25s, border-color .25s;
+    flex-shrink: 0;
+  }
+  :root.light .theme-switch-track {
+    background: #f1f5f9; border-color: #94a3b8;
+  }
+  .theme-switch-thumb {
+    position: absolute; top: 2px; left: 2px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #334155;
+    transition: transform .25s cubic-bezier(.4,0,.2,1), background .25s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  :root.light .theme-switch-thumb {
+    transform: translateX(22px);
+    background: #334155;
+  }
+  .theme-switch-thumb svg { flex-shrink: 0; }
 
   html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 14px; }
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -386,6 +433,38 @@
   }
   .help-highlight { animation: helpPulse 1s ease-out 3; border-radius: var(--radius); }
 
+
+  /* ── Checklist picker popover ─────────────────────────────────── */
+  .picker-wrap { position: relative; display: inline-flex; }
+  .picker-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); border-radius: var(--radius);
+    padding: 5px 10px; font-size: 12px; cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .picker-btn:hover { border-color: var(--accent); background: var(--bg2); }
+  .picker-btn svg.chevron { transition: transform .2s; }
+  .picker-btn.open svg.chevron { transform: rotate(180deg); }
+  .picker-panel {
+    position: absolute; top: calc(100% + 6px); left: 0;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; box-shadow: var(--shadow);
+    min-width: 280px; max-height: 320px; overflow-y: auto;
+    z-index: 300; padding: 6px;
+  }
+  .picker-empty { padding: 12px 10px; font-size: 12px; color: var(--muted); text-align: center; }
+  .picker-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 6px; cursor: pointer;
+    transition: background .1s;
+  }
+  .picker-item:hover { background: var(--bg3); }
+  .picker-item-icon { color: var(--muted); flex-shrink: 0; }
+  .picker-item-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .picker-item-label { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .picker-item-sub   { font-size: 10px; color: var(--muted); font-family: var(--font-mono); }
+
   /* scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -424,6 +503,14 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Export YAML
         </button>
+        <div class="theme-switch" @click="toggleTheme" title="Toggle light / dark mode">
+          <div class="theme-switch-track">
+            <div class="theme-switch-thumb">
+              <template v-if="isDark"><svg width="11" height="11" viewBox="0 0 24 24" fill="#f8fafc" stroke="none"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg></template>
+              <template v-else><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#f8fafc" stroke-width="2.5"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg></template>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- Row 2: aircraft info left + primary actions right -->
       <div class="topbar-row">
@@ -472,12 +559,24 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             Sync meta → YAML
           </button>
-          <div style="position:relative;display:inline-flex;align-items:center">
-            <select class="ve-select" style="font-size:11px;padding:4px 8px;min-width:140px"
-              v-model="exampleSelected" @change="loadExample">
-              <option value="">Load existing checklist…</option>
-              <option v-for="e in examples" :key="e.path" :value="e.path">{{ e.label }}</option>
-            </select>
+          <div class="picker-wrap" v-click-outside="() => pickerOpen=false">
+            <button class="picker-btn" :class="{open: pickerOpen}"
+              @click="pickerOpen=!pickerOpen">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Load checklist
+              <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div v-if="pickerOpen" class="picker-panel">
+              <div v-if="examples.length===0" class="picker-empty">No checklists found in aircraft/</div>
+              <div v-for="e in examples" :key="e.path" class="picker-item"
+                @click="pickerLoad(e)">
+                <svg class="picker-item-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <div class="picker-item-text">
+                  <span class="picker-item-label">{{ e.label }}</span>
+                  <span class="picker-item-sub">{{ e.path }}</span>
+                </div>
+              </div>
+            </div>
           </div>
           <div style="flex:1"></div>
           <abbr v-if="yamlError && editorMode==='yaml'" style="color:var(--red);font-size:11px;cursor:help;text-decoration:none" :title="yamlError">⚠ invalid YAML</abbr>
@@ -1150,6 +1249,22 @@ createApp({
     const toast       = ref({ visible: false, msg: '', type: 'success' });
     const healthStatus = ref('loading');
     const healthText   = ref('checking…');
+    // ── Theme ────────────────────────────────────────────────────────────────
+    // Dark is default. Light only if explicitly saved.
+    const _savedTheme = (() => { try { return localStorage.getItem('theme'); } catch{} return null; })();
+    const isDark = ref(_savedTheme !== 'light');  // null/'dark' → dark=true; 'light' → dark=false
+
+    function toggleTheme() {
+      isDark.value = !isDark.value;
+      const cls = document.documentElement.classList;
+      if (isDark.value) { cls.remove('light'); }
+      else              { cls.add('light'); }
+      try { localStorage.setItem('theme', isDark.value ? 'dark' : 'light'); } catch{}
+    }
+
+    // Apply saved theme on load (dark requires no class, light adds .light)
+    if (!isDark.value) document.documentElement.classList.add('light');
+
     const showHelp   = ref(false);
     const showSetup  = ref(false);
     const editorMode = ref('visual');   // 'yaml' | 'visual'
@@ -1342,6 +1457,7 @@ createApp({
     // ── Example checklists — fetched dynamically from server ────────────────
     const examples        = ref([]);
     const exampleSelected = ref('');
+    const pickerOpen      = ref(false);
 
     async function fetchExamples() {
       try {
@@ -1363,6 +1479,20 @@ createApp({
         showToast(`Loaded: ${path.split('/').pop()}`);
       } catch (e) {
         showToast(`Failed to load: ${e.message}`, 'error');
+      }
+    }
+
+    async function pickerLoad(e) {
+      pickerOpen.value = false;
+      try {
+        const res = await fetch(`${serverUrl.value}/examples/${e.path}`);
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        yamlText.value = await res.text();
+        onYamlEdit();
+        veParseYaml();
+        showToast(`Loaded: ${e.label}`);
+      } catch (err) {
+        showToast(`Failed to load: ${err.message}`, 'error');
       }
     }
     onMounted(() => {
@@ -1681,7 +1811,9 @@ createApp({
       pdfUrl, status, statusMsg,
       meta, opts,
       fileInput, helpBtn, toast, showHelp, showSetup,
+      isDark, toggleTheme,
       examples, exampleSelected, loadExample, fetchExamples,
+      pickerOpen, pickerLoad,
       editorMode, veData, setEditorMode,
       veSecClass, veSecStyle, veItemLabel, veItemCallout, veSetLabel, veSetCallout,
       veAddItem, veRemoveItem, veAddSection, veRemoveSec, veAddCol, veRemoveCol,
@@ -1699,6 +1831,12 @@ createApp({
       loadTemplate,
     };
   }
+}).directive('click-outside', {
+  mounted(el, binding) {
+    el._clickOutside = e => { if (!el.contains(e.target)) binding.value(e); };
+    document.addEventListener('mousedown', el._clickOutside);
+  },
+  unmounted(el) { document.removeEventListener('mousedown', el._clickOutside); }
 }).mount('#app');
 </script>
 </body>
