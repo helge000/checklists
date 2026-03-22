@@ -454,36 +454,15 @@
   .help-highlight { animation: helpPulse 1s ease-out 3; border-radius: var(--radius); }
 
 
-  /* ── Checklist picker popover ─────────────────────────────────── */
-  .picker-wrap { position: relative; display: inline-flex; }
-  .picker-btn {
-    display: inline-flex; align-items: center; gap: 6px;
+  /* ── Checklist dropdown ─────────────────────────────────────── */
+  .checklist-select {
     background: var(--bg3); border: 1px solid var(--border);
     color: var(--text); border-radius: var(--radius);
     padding: 5px 10px; font-size: 12px; cursor: pointer;
-    transition: border-color .15s, background .15s;
+    font-family: var(--font-ui); max-width: 220px;
   }
-  .picker-btn:hover { border-color: var(--accent); background: var(--bg2); }
-  .picker-btn svg.chevron { transition: transform .2s; }
-  .picker-btn.open svg.chevron { transform: rotate(180deg); }
-  .picker-panel {
-    position: absolute; top: calc(100% + 6px); left: 0;
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: 8px; box-shadow: var(--shadow);
-    min-width: 280px; max-height: 320px; overflow-y: auto;
-    z-index: 300; padding: 6px;
-  }
-  .picker-empty { padding: 12px 10px; font-size: 12px; color: var(--muted); text-align: center; }
-  .picker-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 10px; border-radius: 6px; cursor: pointer;
-    transition: background .1s;
-  }
-  .picker-item:hover { background: var(--bg3); }
-  .picker-item-icon { color: var(--muted); flex-shrink: 0; }
-  .picker-item-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-  .picker-item-label { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .picker-item-sub   { font-size: 10px; color: var(--muted); font-family: var(--font-mono); }
+  .checklist-select:hover { border-color: var(--accent); }
+  .checklist-select:focus { border-color: var(--accent); outline: none; }
 
   /* scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -603,13 +582,6 @@
       font-size: 12px; padding: 10px 14px;
     }
 
-    /* ── Picker panel: respect screen edges ──────────────────── */
-    .picker-panel {
-      min-width: 220px;
-      max-width: calc(100vw - 24px);
-      left: auto; right: 0;
-    }
-
     /* ── Buttons: slightly smaller touch targets ─────────────── */
     .btn-sm { padding: 6px 10px; font-size: 11px; }
     .btn-ghost.btn-sm { padding: 5px 8px; }
@@ -625,9 +597,6 @@
     .btn-export-yaml { display: none !important; }
 
     .editor-toolbar { padding: 4px 6px; gap: 4px; }
-
-    /* Picker button: icon-only */
-    .picker-btn { padding: 5px 8px; font-size: 11px; }
 
     .ve-wrap { padding: 6px 4px; }
     .ve-items { padding: 3px 4px; }
@@ -727,25 +696,10 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             Sync meta → YAML
           </button>
-          <div class="picker-wrap" v-click-outside="() => pickerOpen=false">
-            <button class="picker-btn" :class="{open: pickerOpen}"
-              @click="pickerOpen=!pickerOpen">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              Load checklist
-              <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div v-if="pickerOpen" class="picker-panel">
-              <div v-if="examples.length===0" class="picker-empty">No checklists found in aircraft/</div>
-              <div v-for="e in examples" :key="e.path" class="picker-item"
-                @click="pickerLoad(e)">
-                <svg class="picker-item-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                <div class="picker-item-text">
-                  <span class="picker-item-label">{{ e.label }}</span>
-                  <span class="picker-item-sub">{{ e.path }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <select class="checklist-select" @change="loadExample" v-model="exampleSelected" title="Load checklist">
+            <option value="" disabled selected>Load checklist…</option>
+            <option v-for="e in examples" :key="e.path" :value="e.path">{{ e.label }}</option>
+          </select>
           <div style="flex:1"></div>
           <abbr v-if="yamlError && editorMode==='yaml'" style="color:var(--red);font-size:11px;cursor:help;text-decoration:none" :title="yamlError">⚠ invalid YAML</abbr>
           <span v-else-if="editorMode==='yaml'" style="color:var(--green);font-size:11px">✓ valid YAML</span>
@@ -1654,7 +1608,6 @@ createApp({
     // ── Example checklists — fetched dynamically from server ────────────────
     const examples        = ref([]);
     const exampleSelected = ref('');
-    const pickerOpen      = ref(false);
 
     async function fetchExamples() {
       try {
@@ -1679,19 +1632,6 @@ createApp({
       }
     }
 
-    async function pickerLoad(e) {
-      pickerOpen.value = false;
-      try {
-        const res = await fetch(`${serverUrl.value}/examples/${e.path}`);
-        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-        yamlText.value = await res.text();
-        onYamlEdit();
-        veParseYaml();
-        showToast(`Loaded: ${e.label}`);
-      } catch (err) {
-        showToast(`Failed to load: ${err.message}`, 'error');
-      }
-    }
     onMounted(() => {
       onYamlEdit();
       veParseYaml();
@@ -1954,7 +1894,6 @@ createApp({
       fileInput, helpBtn, toast, showHelp, showSetup,
       isDark, toggleTheme,
       examples, exampleSelected, loadExample, fetchExamples,
-      pickerOpen, pickerLoad,
       editorMode, veData, setEditorMode,
       veSecClass, veSecStyle, veItemLabel, veItemCallout, veSetLabel, veSetCallout,
       veAddItem, veRemoveItem, veAddSection, veRemoveSec, veAddCol, veRemoveCol,
@@ -1972,12 +1911,6 @@ createApp({
       showCacheError, dismissCacheError, restoreCorruptCache,
     };
   }
-}).directive('click-outside', {
-  mounted(el, binding) {
-    el._clickOutside = e => { if (!el.contains(e.target)) binding.value(e); };
-    document.addEventListener('mousedown', el._clickOutside);
-  },
-  unmounted(el) { document.removeEventListener('mousedown', el._clickOutside); }
 }).directive('sortable-sections', {
   mounted(el, binding) {
     const { half, ci } = binding.value;
