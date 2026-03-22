@@ -29,6 +29,7 @@
     --muted:     #64748b;
     --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
     --font-ui:   'Inter', system-ui, sans-serif;
+    --callout:   #4f8ef7;
     --radius:    8px;
     --shadow:    0 4px 24px rgba(0,0,0,.4);
   }
@@ -44,6 +45,7 @@
     --red:       #dc2626;
     --text:      #111827;
     --muted:     #6b7280;
+    --callout:   #084ec7;
     --shadow:    0 4px 24px rgba(0,0,0,.12);
   }
   /* Fix items that hardcode dark colours in light mode */
@@ -51,6 +53,7 @@
   :root.light .line-numbers    { background: var(--bg3); color: var(--muted); }
   :root.light .ve-section      { background: var(--bg2); }
   :root.light .ve-item input   { background: var(--bg3); color: var(--text); }
+  :root.light .ve-item input.callout { color: var(--callout); }
   :root.light .pdf-preview-wrap { background: #e5e7eb; }
   :root.light textarea.yaml-editor { color: #1e293b; }
   /* Toggle button */
@@ -406,7 +409,7 @@
   .ve-item { display: grid; grid-template-columns: auto 1fr auto 80px 70px auto; gap: 4px; align-items: center; }
   .ve-item input { background: var(--bg3); border: 1px solid transparent; border-radius: 3px; color: var(--text); font-family: var(--font-mono); font-size: 11px; padding: 2px 5px; width: 100%; }
   .ve-item input:focus { border-color: var(--accent); outline: none; }
-  .ve-item input.callout { color: var(--accent); }
+  .ve-item input.callout { color: var(--callout); }
   .ve-item-style { font-size: 10px; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 2px 4px; cursor: pointer; white-space: nowrap; }
   .ve-item-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; line-height: 1; padding: 0 2px; }
   .ve-item-del:hover { color: var(--red); }
