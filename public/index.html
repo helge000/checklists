@@ -276,6 +276,17 @@
   .toast.error { border-color: var(--red); }
   .toast.success { border-color: var(--green); }
 
+  /* ── Cache error banner ───────────────────────────────────────── */
+  .cache-error-banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    background: #7f1d1d; color: #fecaca; border-bottom: 2px solid var(--red);
+    padding: 10px 20px; font-size: 13px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .cache-error-banner svg { color: #fca5a5; flex-shrink: 0; }
+  .cache-error-banner span { flex: 1; min-width: 200px; }
+  .cache-error-banner .btn { flex-shrink: 0; }
+
   /* ── File input hidden ────────────────────────────────────────── */
   input[type=file] { display: none; }
 
@@ -899,6 +910,14 @@
     {{ toast.msg }}
   </div>
 
+  <!-- Cache error banner -->
+  <div v-if="showCacheError" class="cache-error-banner">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span>Cached YAML is corrupt or invalid. The editor has been reset to the default template.</span>
+    <button class="btn btn-sm btn-ghost" @click="restoreCorruptCache">Restore anyway</button>
+    <button class="btn btn-sm btn-primary" @click="dismissCacheError">OK, start fresh</button>
+  </div>
+
   <!-- ── Setup modal ─────────────────────────────────────────────── -->
   <div v-if="showSetup" class="modal-overlay" @click.self="showSetup=false">
     <div class="modal" style="max-width:640px">
@@ -1377,7 +1396,18 @@ createApp({
     const serverUrl = ref(`${window.location.protocol}//${window.location.host}`);
 
     const _cached  = (() => { try { return localStorage.getItem('checklist_yaml_cache') || null; } catch{} return null; })();
-    const yamlText  = ref(_cached || TEMPLATES.minimal);
+    // Validate cached YAML on load — if corrupt, flag it for user confirmation
+    let _cacheValid = true;
+    if (_cached) {
+      try {
+        const parsed = jsyaml.load(_cached);
+        if (!parsed || typeof parsed !== 'object' || (!parsed.normal && !parsed.emergency)) {
+          _cacheValid = false;
+        }
+      } catch { _cacheValid = false; }
+    }
+    const yamlText  = ref(_cacheValid ? (_cached || TEMPLATES.minimal) : TEMPLATES.minimal);
+    const showCacheError = ref(_cached && !_cacheValid);
     const yamlError = ref('');
     const pdfUrl    = ref('');
     const pdfBlob   = ref(null);
@@ -1599,6 +1629,25 @@ createApp({
       status.value = 'idle';
       statusMsg.value = '';
       showToast(`Template loaded: ${name}`);
+    }
+
+    // ── Corrupt cache handling ──────────────────────────────────────
+    function dismissCacheError() {
+      // Keep the template that was loaded as fallback, clear the bad cache
+      try { localStorage.removeItem('checklist_yaml_cache'); } catch{}
+      showCacheError.value = false;
+      showToast('Cache cleared — starting fresh');
+    }
+    function restoreCorruptCache() {
+      // Load the raw cached text anyway so the user can try to fix it
+      const raw = (() => { try { return localStorage.getItem('checklist_yaml_cache') || ''; } catch{} return ''; })();
+      if (raw) {
+        yamlText.value = raw;
+        onYamlEdit();
+        veParseYaml();
+      }
+      showCacheError.value = false;
+      showToast('Corrupt YAML restored — check for errors', 'error');
     }
 
 
@@ -1920,6 +1969,7 @@ createApp({
       generate, downloadPdf, generateAndDownload,
       triggerImport, onFileImport, exportYaml,
       loadTemplate,
+      showCacheError, dismissCacheError, restoreCorruptCache,
     };
   }
 }).directive('click-outside', {
