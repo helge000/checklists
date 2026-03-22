@@ -80,7 +80,7 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
   /* ── Layout ───────────────────────────────────────────────────── */
-  .app { display: grid; grid-template-rows: 72px 1fr 36px; height: 100vh; }
+  .app { display: grid; grid-template-rows: auto 1fr auto; height: 100vh; }
 
   .topbar {
     background: var(--bg2);
@@ -88,7 +88,7 @@
     display: flex; flex-direction: column; align-items: stretch;
     position: sticky; top: 0; z-index: 100;
   }
-  .topbar-row { display: flex; align-items: center; gap: 12px; padding: 0 24px; height: 36px; }
+  .topbar-row { display: flex; align-items: center; gap: 12px; padding: 0 24px; min-height: 36px; flex-wrap: wrap; }
   .topbar-row + .topbar-row { border-top: 1px solid var(--border); }
   .topbar-logo {
     display: flex; align-items: center; gap: 10px;
@@ -96,6 +96,7 @@
   }
   .topbar-logo svg { color: var(--accent); }
   .topbar-spacer { flex: 1; }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
   .main { display: grid; grid-template-columns: 1fr; overflow: hidden; }
 
@@ -387,7 +388,7 @@
   .ve-color-dot.green  { background: #4e7a3a; }
   .ve-color-dot.yellow { background: #b8860b; }
   .ve-items { padding: 4px 6px; display: flex; flex-direction: column; gap: 2px; }
-  .ve-item { display: grid; grid-template-columns: 1fr auto 80px auto; gap: 4px; align-items: center; }
+  .ve-item { display: grid; grid-template-columns: auto 1fr auto 80px 70px auto; gap: 4px; align-items: center; }
   .ve-item input { background: var(--bg3); border: 1px solid transparent; border-radius: 3px; color: var(--text); font-family: var(--font-mono); font-size: 11px; padding: 2px 5px; width: 100%; }
   .ve-item input:focus { border-color: var(--accent); outline: none; }
   .ve-item input.callout { color: var(--accent); }
@@ -408,7 +409,6 @@
   .ve-drag-handle { color: var(--muted); cursor: grab; padding: 0 4px; font-size: 14px; user-select: none; }
   .ve-drag-handle:active { cursor: grabbing; }
   .ve-select { font-size: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; color: var(--text); padding: 2px 4px; cursor: pointer; }
-  .ve-item { display: grid; grid-template-columns: auto 1fr auto 80px 70px auto; gap: 4px; align-items: center; }
   /* toggle buttons */
   .editor-mode-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 4px 7px; cursor: pointer; display: inline-flex; align-items: center; }
   .editor-mode-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -469,6 +469,152 @@
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+
+  /* ════════════════════════════════════════════════════════════════
+     ██  MOBILE RESPONSIVE — max-width: 768px
+     ════════════════════════════════════════════════════════════════ */
+  @media (max-width: 768px) {
+
+    /* ── Topbar: allow rows to wrap, auto-height ─────────────── */
+    .topbar-row {
+      padding: 6px 12px;
+      gap: 6px;
+      min-height: auto;
+    }
+    .topbar-logo { font-size: 13px; gap: 6px; }
+    .topbar-logo + span { display: none; }  /* hide subtitle */
+
+    /* Aircraft info: allow wrapping */
+    .editor-aircraft-info {
+      white-space: normal;
+      flex-wrap: wrap;
+      gap: 4px;
+      font-size: 12px !important;
+    }
+    .editor-aircraft-info .callsign { font-size: 13px !important; }
+    .editor-aircraft-info .model    { font-size: 11px !important; }
+
+    /* ── Hide PDF preview column + resizer ────────────────────── */
+    #previewCol   { display: none !important; }
+    #editorResizer { display: none !important; }
+
+    /* Editor column takes full width */
+    .editor-body > .editor-col:first-child {
+      width: 100% !important;
+      flex: 1 !important;
+    }
+
+    /* ── Hide Generate PDF button, keep Download ──────────────── */
+    .btn-generate-pdf { display: none !important; }
+
+    /* Make Download button more prominent on mobile */
+    .btn-download-pdf { padding: 8px 14px; font-size: 13px; }
+
+    /* ── Editor toolbar: allow wrapping ───────────────────────── */
+    .editor-toolbar {
+      flex-wrap: wrap;
+      padding: 6px 10px;
+      gap: 6px;
+      min-height: auto;
+    }
+
+    /* ── Visual editor: single column layout ─────────────────── */
+    .ve-halves {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .ve-wrap { padding: 8px 8px; }
+
+    /* Checklist items: stack label + callout in 2 rows */
+    .ve-item {
+      grid-template-columns: auto 1fr auto auto;
+      grid-template-rows: auto auto;
+      gap: 2px 4px;
+    }
+    /* Row 1: drag-handle, label, style-select, delete */
+    .ve-item > .ve-item-drag  { grid-row: 1; grid-column: 1; }
+    .ve-item > input:first-of-type { grid-row: 1; grid-column: 2; }
+    .ve-item > .ve-select     { grid-row: 1; grid-column: 3; }
+    .ve-item > .ve-item-del   { grid-row: 1; grid-column: 4; }
+    /* Row 2: arrow + callout span full width under label */
+    .ve-item > span:not(.ve-item-drag) { grid-row: 2; grid-column: 1; text-align: center; }
+    .ve-item > input.callout  { grid-row: 2; grid-column: 2 / -1; }
+
+    .ve-item input { font-size: 12px; padding: 4px 6px; }
+    .ve-select { font-size: 11px; padding: 3px 5px; }
+
+    /* Section headers: allow title wrapping */
+    .ve-section-header {
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 6px 8px;
+    }
+    .ve-section-title { font-size: 12px; min-width: 0; }
+
+    /* ── Modals: full-width, reduce padding ──────────────────── */
+    .modal-overlay { padding: 8px; }
+    .modal { border-radius: 8px; max-height: 95vh; }
+    .modal-header { padding: 14px 16px 0; }
+    .modal-header h2 { font-size: 14px; }
+    .modal-body { padding: 14px 16px 20px; }
+
+    .setup-grid { grid-template-columns: 1fr; gap: 16px; }
+
+    /* Help modal YAML block */
+    pre.yaml-block { font-size: 10px; padding: 10px 12px; }
+    .param-table { font-size: 11px; }
+    .param-table td, .param-table th { padding: 5px 6px; }
+
+    /* ── Footer: compact ─────────────────────────────────────── */
+    .app-footer {
+      padding: 4px 12px;
+      gap: 8px;
+      font-size: 10px;
+      min-height: 32px;
+    }
+    .app-footer .mf-sep { display: none; }
+    .app-footer a { gap: 3px; }
+
+    /* ── Toast: left-aligned, wider ──────────────────────────── */
+    .toast {
+      left: 12px; right: 12px; bottom: 12px;
+      font-size: 12px; padding: 10px 14px;
+    }
+
+    /* ── Picker panel: respect screen edges ──────────────────── */
+    .picker-panel {
+      min-width: 220px;
+      max-width: calc(100vw - 24px);
+      left: auto; right: 0;
+    }
+
+    /* ── Buttons: slightly smaller touch targets ─────────────── */
+    .btn-sm { padding: 6px 10px; font-size: 11px; }
+    .btn-ghost.btn-sm { padding: 5px 8px; }
+  }
+
+  /* ── Extra-small screens (phones in portrait) ──────────────── */
+  @media (max-width: 480px) {
+    .topbar-row { padding: 4px 8px; gap: 4px; }
+    .topbar-logo { font-size: 12px; }
+
+    /* Hide less-essential topbar buttons — keep Setup + Download */
+    .btn-import-yaml,
+    .btn-export-yaml { display: none !important; }
+
+    .editor-toolbar { padding: 4px 6px; gap: 4px; }
+
+    /* Picker button: icon-only */
+    .picker-btn { padding: 5px 8px; font-size: 11px; }
+
+    .ve-wrap { padding: 6px 4px; }
+    .ve-items { padding: 3px 4px; }
+
+    /* Footer: just show status + copyright */
+    .app-footer a:not(:first-child) { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -495,11 +641,11 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           Help
         </button>
-        <button class="btn btn-ghost btn-sm" @click="triggerImport">
+        <button class="btn btn-ghost btn-sm btn-import-yaml" @click="triggerImport">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Import YAML
         </button>
-        <button class="btn btn-ghost btn-sm" @click="exportYaml">
+        <button class="btn btn-ghost btn-sm btn-export-yaml" @click="exportYaml">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Export YAML
         </button>
@@ -522,18 +668,20 @@
           <span v-if="meta.model" class="model" style="font-size:12px">{{ meta.model }}</span>
         </div>
         <div class="topbar-spacer"></div>
-        <button class="btn btn-sm" @click="showSetup=true" style="background:#b8860b;color:#fff;border:none;font-weight:500">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          Checklist Setup
-        </button>
-        <button class="btn btn-primary btn-sm" @click="generate" :disabled="status==='loading'">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          {{ status === 'loading' ? 'Generating…' : 'Generate PDF' }}
-        </button>
-        <button class="btn btn-success btn-sm" @click="downloadPdf" :disabled="!pdfUrl">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Download PDF
-        </button>
+        <div class="topbar-actions">
+          <button class="btn btn-sm" @click="showSetup=true" style="background:#b8860b;color:#fff;border:none;font-weight:500">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Checklist Setup
+          </button>
+          <button class="btn btn-primary btn-sm btn-generate-pdf" @click="generate" :disabled="status==='loading'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            {{ status === 'loading' ? 'Generating…' : 'Generate PDF' }}
+          </button>
+          <button class="btn btn-success btn-sm btn-download-pdf" @click="generateAndDownload" :disabled="status==='loading'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PDF
+          </button>
+        </div>
       </div>
       <input type="file" ref="fileInput" accept=".yaml,.yml" @change="onFileImport"/>
     </div>
@@ -983,7 +1131,6 @@
           </table>
         </div>
 
-        <!-- YAML structure -->
         <!-- Item styles -->
         <div class="help-section">
           <h3>Item Styles</h3>
@@ -1412,6 +1559,12 @@ createApp({
       a.click();
     }
 
+    // ── Generate + Download (for mobile) ───────────────────────────
+    async function generateAndDownload() {
+      await generate();
+      if (pdfBlob.value) downloadPdf();
+    }
+
     // ── Import / Export ────────────────────────────────────────────
     function triggerImport() { fileInput.value.click(); }
 
@@ -1826,7 +1979,7 @@ createApp({
       previewHeight,
       syncMetaToYaml, onYamlEdit, formatYaml,
       onFontChange,
-      generate, downloadPdf,
+      generate, downloadPdf, generateAndDownload,
       triggerImport, onFileImport, exportYaml,
       loadTemplate,
     };
