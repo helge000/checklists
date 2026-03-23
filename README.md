@@ -2,49 +2,48 @@
 
 A tool for creating print-ready **A4 landscape PDF checklists** — designed for laminated cockpit cards with a centre fold. Normal procedures on the left half, emergency procedures on the right.
 
-🌐 **Live demo: [checklists.helgenberger.net](https://checklists.helgenberger.net/)**
+**Live version: [checklists.helgenberger.net](https://checklists.helgenberger.net/)**
 
+---
+![Desktop Screenshot](./doc/cg-desktop.png)
 ---
 
 ## Overview
 
-The project has three components:
-
-| File | Description |
+| File / Directory | Description |
 |---|---|
 | `generate.py` | CLI tool: YAML → PDF |
-| `server.py` | Flask HTTP backend: `POST /generate` → PDF, serves `./public/` |
-| `public/index.html` | Vue 3 web UI |
+| `server.py` | Flask HTTP backend: `POST /generate` → PDF, serves `./public/` and `./aircraft/` |
+| `public/index.html` | Vue 3 web UI (single HTML file, no build step) |
 | `requirements.txt` | Python dependencies |
-| `Dockerfile` | Container image, non-root, port 5000 |
-
-Checklists are defined in YAML — see [`deadx.yaml`](deadx.yaml) (DA40 TDI) and [`deppt.yaml`](deppt.yaml) (Robin R200) for real-world examples.
+| `Dockerfile` | Container image, non-root user, port 5000 |
+| `compose.yml` | Docker Compose: checklist app + Caddy reverse proxy + deploy webhook |
+| `aircraft/` | Example YAML checklists served via `/examples` API |
+| `deploy/` | Webhook receiver + deploy script for auto-deploy on git push |
 
 ---
 
 ## Quick Start
 
-### Docker (recommended)
+### Docker Compose (production)
 
 ```bash
 git clone https://github.com/helge000/checklists
 cd checklists
 
-# Place the UI
-mkdir -p public
-cp checklist-ui.html public/index.html
+# Create .env with your webhook secret
+echo "WEBHOOK_SECRET=your_secret_here" > .env
 
-docker build -t checklist-generator .
-docker run -p 5000:5000 checklist-generator
+docker compose -f compose.yml up -d
 ```
 
-Open **http://localhost:5000** — the web UI lets you edit YAML, tune all layout options and generate PDFs directly in the browser.
+Open **https://checklists.helgenberger.net** — or your configured domain.
 
-### Local (venv)
+### Local dev (venv)
 
 ```bash
 # System fonts (Debian / Ubuntu)
-sudo apt install fonts-liberation fonts-dejavu-core
+sudo apt install fonts-liberation fonts-dejavu-core fontconfig
 
 # Python environment
 python3 -m venv .venv
@@ -52,13 +51,44 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # CLI — generate a PDF directly
-python3 generate.py deadx.yaml
+python3 generate.py aircraft/deadx.yaml
 
 # HTTP backend + UI
-mkdir -p public && cp checklist-ui.html public/index.html
 python3 server.py --host 0.0.0.0 --port 5000
+# → http://localhost:5000
 ```
 
+---
+
+## Web UI Features
+
+The web UI (`public/index.html`) is a single self-contained HTML file requiring no build step.
+
+### Editor
+- **Visual editor** — drag-and-drop sections and items, inline editing, colour picker for section headers, style dropdown per item
+- **YAML source editor** — syntax-highlighted with line numbers, live validation with error tooltip
+- Toggle between visual and YAML view at any time; changes sync both ways
+
+### Checklists
+- **Load existing checklist** — dropdown populated dynamically from `aircraft/` via the `/examples` API
+- **Import YAML** — load any local `.yaml` / `.yml` file
+- **Export YAML** — save current state as a named YAML file
+- **Auto-save** — YAML is cached in `localStorage` and restored on next visit
+
+### PDF Generation
+- **Generate PDF** — sends YAML to the backend, renders inline preview (desktop)
+- **Download PDF** — saves the generated PDF with aircraft callsign in the filename
+- On **mobile**: single "Download PDF" button that generates and immediately triggers download; inline preview is hidden
+
+### Settings (Checklist Setup modal)
+- Aircraft metadata: callsign, ICAO type, model, revision
+- Layout: columns per half (2 or 3), fold margin, column gap, outer margin
+- Typography: font family, scale multiplier, line spacing
+
+### UX
+- **Light / dark mode** toggle with animated slider switch; preference persisted in `localStorage`
+- **Mobile responsive** — compact single-column layout on screens < 768px; extra-small breakpoint at 480px hides less-essential buttons
+- **Aircraft info** displayed in the toolbar row after loading a checklist
 ---
 
 ## CLI Reference
@@ -80,25 +110,27 @@ python3 generate.py INPUT.yaml [OUTPUT.pdf] [options]
 | `--font NAME` | `dejavu-condensed` | `arial` · `dejavu` · `dejavu-condensed` · `dejavu-mono` |
 | `--monospaced` | — | Shorthand for `--font dejavu-mono` |
 
-All options can also be set in the YAML `meta` block (CLI overrides YAML).
+All options can also be set in the YAML `meta` block (CLI flags override YAML).
 
 ---
 
 ## HTTP API
 
 ```
-POST /generate          YAML body → application/pdf
-GET  /health            {"status": "ok", ...}
-GET  /                  Serves ./public/index.html
-GET  /<path>            Serves ./public/<path>
+POST /generate               YAML body → application/pdf
+GET  /health                 {"status": "ok", ...}
+GET  /examples               Lists checklists in ./aircraft/
+GET  /examples/<file.yaml>   Serve a YAML file from ./aircraft/
+GET  /                       Serves ./public/index.html
+GET  /<path>                 Serves ./public/<path>
 ```
 
-Query parameters mirror the CLI flags (`scale`, `columns`, `fold`, `col_gap`, `outer_margin`, `font`, `monospaced`, `line_spacing`).
+Query parameters for `/generate` mirror the CLI flags (`scale`, `columns`, `fold`, `col_gap`, `outer_margin`, `font`, `monospaced`, `line_spacing`).
 
 ```bash
 curl -X POST "http://localhost:5000/generate?scale=1.2" \
      -H "Content-Type: application/yaml" \
-     --data-binary @deadx.yaml \
+     --data-binary @aircraft/deadx.yaml \
      -o checklist.pdf
 ```
 
@@ -186,6 +218,19 @@ YAML interprets `ON`, `OFF`, `YES`, `NO` as booleans. Always quote them:
 - AVIONIC MASTER: "OFF"   # ✓ correct
 - AVIONIC MASTER: OFF     # ✗ parsed as boolean False
 ```
+
+---
+
+## Auto-Deploy (Webhook)
+
+The `deploy/` directory contains a lightweight webhook receiver that triggers `git pull` + container restart on every push to `main`.
+
+```
+POST /webhook   → runs deploy/deploy.sh → git reset/fetch/checkout + docker restart
+GET  /webhook   → health check (200 OK)
+```
+
+Configure in GitHub: Settings → Webhooks → `https://your-domain/webhook`, secret = `$WEBHOOK_SECRET`.
 
 ---
 
