@@ -2,7 +2,7 @@ meta:
   callsign: "DEPPT"
   icao_type: "R200"
   model: "Robin 2120 U"
-  revision: ""
+  revision: "Rev 1 | 23.03.2026"
   columns: 6
   font: dejavu-condensed
   scale: 1.0
@@ -17,6 +17,7 @@ normal:
       - title: "BEFORE START"
         items:
           - Pre-flight Inspection: COMPLETED
+          - PIC: ESTABLISHED
           - "Pitot & Static Cover (3x)": REMOVED
           - "Mass & Balance": CHECKED
           - "Documents & Papers": ON BOARD

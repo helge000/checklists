@@ -2,7 +2,7 @@ meta:
   callsign: "DEGMB"
   icao_type: "C172"
   model: "Reims/Cessna F172 P"
-  revision: "Rev.4 18.03.2026"
+  revision: "Rev.4 23.03.2026"
   columns: 6
   font: dejavu-condensed
   scale: 1.05
@@ -15,6 +15,7 @@ normal:
     sections:
       - title: COCKPIT PREPARATION
         items:
+          - PIC: ESTABLISHED
           - Preflight Inspection: COMPLETED
           - Pitot Cover: REMOVED
           - Mass & Balance: CHECKED
@@ -89,7 +90,7 @@ normal:
           - Carb. Heat: CHECKED
             style: blue
           - style: note
-            Check RPM drop! Rise -> Carb Icing!: null
+            Check RPM drop! Rise → Carb Icing!: null
           - Engine Indicators: CHECKED
             style: blue
           - Ammeters: CHECKED
