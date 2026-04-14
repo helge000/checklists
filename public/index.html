@@ -385,10 +385,11 @@
 
   /* ── Visual editor ────────────────────────────────────────────── */
   .ve-wrap { flex: 1; overflow-y: auto; background: var(--bg); padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
-  .ve-halves { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ve-halves { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
   .ve-half-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; padding: 4px 0 6px; }
   .ve-half-label.normal { color: var(--text); }
   .ve-half-label.emergency { color: var(--red); }
+  .ve-half-label.walkaround { color: var(--green); }
   .ve-col { display: flex; flex-direction: column; gap: 6px; }
   .ve-sections-container { display: flex; flex-direction: column; gap: 6px; }
   .ve-col-header { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; padding: 2px 0; border-bottom: 1px solid var(--border); margin-bottom: 2px; display: flex; align-items: center; justify-content: space-between; }
@@ -805,9 +806,54 @@
                     <button class="ve-add-section" @click="veAddSection('emergency',ci)">+ section</button>
                   </div>
                   <button class="ve-add-section" @click="veAddCol('emergency')"
-                    :disabled="veData.emergency.length >= opts.columns/2"
-                    :style="veData.emergency.length >= opts.columns/2 ? 'opacity:.35;cursor:not-allowed' : ''"
-                    :title="veData.emergency.length >= opts.columns/2 ? 'Max columns reached — change in Checklist Setup' : ''">+ column</button>
+                    :disabled="veData.emergency.length >= Math.floor(opts.columns/2) - veData.walkaround.length"
+                    :style="veData.emergency.length >= Math.floor(opts.columns/2) - veData.walkaround.length ? 'opacity:.35;cursor:not-allowed' : ''"
+                    :title="veData.emergency.length >= Math.floor(opts.columns/2) - veData.walkaround.length ? 'Max columns reached — change in Checklist Setup' : ''">+ column</button>
+                </div>
+                <div>
+                  <div class="ve-half-label walkaround">🟢 Walkaround</div>
+                  <div v-for="(col, ci) in veData.walkaround" :key="'w'+ci" class="ve-col" style="margin-bottom:10px">
+                    <div class="ve-col-header">Col {{ col.col }} <button class="ve-del-section" @click="veRemoveCol('walkaround',ci)" title="Remove column">×</button></div>
+                    <div class="ve-sections-container" :data-half="'walkaround'" :data-ci="ci"
+                      v-sortable-sections="{ half: 'walkaround', ci }">
+                    <div v-for="(sec, si) in col.sections" :key="si" class="ve-section" :data-si="si">
+                      <div class="ve-section-header" :style="veSecStyle(sec, 'walkaround')">
+                        <span class="ve-drag-handle" title="Drag to reorder">⠿</span>
+                        <input class="ve-section-title" v-model="sec.title" @input="veSave" placeholder="Section title"/>
+                        <span class="ve-color-dots">
+                          <span v-for="c in ['black','blue','green','yellow']" :key="c"
+                            class="ve-color-dot" :class="[c, {active: (sec.header_color||'black')===c}]"
+                            :title="c" @click="veSetHdrColor(sec,c)"></span>
+                        </span>
+                        <button class="ve-del-section" @click="veRemoveSec('walkaround',ci,si)" title="Delete section">×</button>
+                      </div>
+                      <div class="ve-items" v-sortable-items="{ half: 'walkaround', ci, si }">
+                        <div v-for="(item, ii) in sec.items" :key="ii" class="ve-item" :data-ii="ii">
+                          <span class="ve-item-drag" title="Drag to reorder">⠿</span>
+                          <input :value="veItemLabel(item)" @input="veSetLabel(item,$event.target.value)" placeholder="Label"/>
+                          <span style="color:var(--muted);font-size:11px">→</span>
+                          <input class="callout" :value="veItemCallout(item)" @input="veSetCallout(item,$event.target.value)" placeholder="callout"/>
+                          <select class="ve-select" :value="veItemStyle(item)" @change="veSetStyle(item,$event.target.value)">
+                            <option value="">—</option>
+                            <option value="blue">blue</option>
+                            <option value="note">note</option>
+                            <option value="warn">warn</option>
+                            <option value="centered">centered</option>
+                            <option value="centered_blue">centered_blue</option>
+                            <option value="red">red</option>
+                          </select>
+                          <button class="ve-item-del" @click="veRemoveItem(sec,ii)" title="Delete">×</button>
+                        </div>
+                        <button class="ve-add-item" @click="veAddItem(sec)">+ item</button>
+                      </div>
+                    </div>
+                    </div>
+                    <button class="ve-add-section" @click="veAddSection('walkaround',ci)">+ section</button>
+                  </div>
+                  <button class="ve-add-section" @click="veAddCol('walkaround')"
+                    :disabled="veData.walkaround.length >= Math.floor(opts.columns/2) - veData.emergency.length"
+                    :style="veData.walkaround.length >= Math.floor(opts.columns/2) - veData.emergency.length ? 'opacity:.35;cursor:not-allowed' : ''"
+                    :title="veData.walkaround.length >= Math.floor(opts.columns/2) - veData.emergency.length ? 'Max columns reached — change in Checklist Setup' : ''">+ column</button>
                 </div>
               </div>
             </div>
@@ -1002,7 +1048,7 @@
         <div class="help-section">
           <h3>Page Layout</h3>
           <p>The generator produces a single <strong>A4 landscape</strong> page that is designed to be folded vertically in the centre.
-             The <strong>left half</strong> contains normal (pre-flight / flight) procedures, the <strong>right half</strong> contains emergency procedures.</p>
+             The <strong>left half</strong> contains normal (pre-flight / flight) procedures, the <strong>right half</strong> contains emergency procedures and, optionally, a walkaround checklist in the rightmost column(s).</p>
 
           <div class="a4-diagram">
             <div class="a4-svg-wrap">
@@ -1139,10 +1185,11 @@
         <!-- YAML reference -->
         <div class="help-section">
           <h3>YAML Structure</h3>
-          <p>Every checklist file has three top-level keys: <code>meta</code>, <code>normal</code>, and <code>emergency</code>.</p>
+          <p>Every checklist file has these top-level keys: <code>meta</code>, <code>normal</code>, <code>emergency</code>, and optionally <code>walkaround</code>.</p>
 
-          <p><code>normal</code> sections go on the <strong>left half</strong>; <code>emergency</code> sections go on the <strong>right half</strong>.
-          Columns are numbered <code>1..N</code> within each half independently.</p>
+          <p><code>normal</code> sections go on the <strong>left half</strong>; <code>emergency</code> sections go on the <strong>right half</strong> (leftmost columns).
+          <code>walkaround</code> is optional — when present it occupies the <strong>rightmost column(s) of the right half</strong>, pushing emergency left.
+          Columns are numbered <code>1..N</code> within each area independently.</p>
 
           <pre class="yaml-block"><span class="yc"># ── Aircraft identity ─────────────────────────</span>
 <span class="yk">meta</span><span class="yp">:</span>
@@ -1358,7 +1405,7 @@ createApp({
     if (_cached) {
       try {
         const parsed = jsyaml.load(_cached);
-        if (!parsed || typeof parsed !== 'object' || (!parsed.normal && !parsed.emergency)) {
+        if (!parsed || typeof parsed !== 'object' || (!parsed.normal && !parsed.emergency && !parsed.walkaround)) {
           _cacheValid = false;
         }
       } catch { _cacheValid = false; }
@@ -1397,7 +1444,7 @@ createApp({
     const showHelp   = ref(false);
     const showSetup  = ref(false);
     const editorMode = ref('visual');   // 'yaml' | 'visual'
-    const veData     = ref({ normal: [], emergency: [] });
+    const veData     = ref({ normal: [], emergency: [], walkaround: [] });
 
     const meta = ref({
       callsign: 'D-EADX', icao_type: 'DA40',
@@ -1469,8 +1516,8 @@ createApp({
         const parsed = jsyaml.load(yamlText.value);
         if (!parsed || typeof parsed !== 'object') {
           yamlError.value = 'Not a valid YAML mapping';
-        } else if (!parsed.normal && !parsed.emergency) {
-          yamlError.value = 'Missing normal: or emergency: keys';
+        } else if (!parsed.normal && !parsed.emergency && !parsed.walkaround) {
+          yamlError.value = 'Missing normal:, emergency:, or walkaround: keys';
         } else {
           yamlError.value = '';
         }
@@ -1677,8 +1724,9 @@ createApp({
       try {
         const parsed = jsyaml.load(yamlText.value) || {};
         veData.value = {
-          normal:    (parsed.normal    || []).map(c => JSON.parse(JSON.stringify(c))),
-          emergency: (parsed.emergency || []).map(c => JSON.parse(JSON.stringify(c))),
+          normal:     (parsed.normal     || []).map(c => JSON.parse(JSON.stringify(c))),
+          emergency:  (parsed.emergency  || []).map(c => JSON.parse(JSON.stringify(c))),
+          walkaround: (parsed.walkaround || []).map(c => JSON.parse(JSON.stringify(c))),
         };
       } catch { /* keep existing veData on parse error */ }
     }
@@ -1687,15 +1735,15 @@ createApp({
       // Rebuild YAML from veData, preserving meta block
       try {
         const parsed = jsyaml.load(yamlText.value) || {};
-        parsed.normal    = veData.value.normal;
-        parsed.emergency = veData.value.emergency;
+        parsed.normal     = veData.value.normal;
+        parsed.emergency  = veData.value.emergency;
+        parsed.walkaround = veData.value.walkaround;
         // jsyaml.dump produces valid YAML
-        const metaYaml   = yamlText.value.match(/^(meta:[\s\S]*?\n)(?=normal:|emergency:|$)/m);
+        const metaYaml   = yamlText.value.match(/^(meta:[\s\S]*?\n)(?=normal:|emergency:|walkaround:|$)/m);
         const metaBlock  = metaYaml ? metaYaml[1] : '';
-        const bodyYaml   = jsyaml.dump(
-          { normal: parsed.normal, emergency: parsed.emergency },
-          { indent: 2, lineWidth: 120, noRefs: true }
-        );
+        const body = { normal: parsed.normal, emergency: parsed.emergency };
+        if (parsed.walkaround && parsed.walkaround.length) body.walkaround = parsed.walkaround;
+        const bodyYaml   = jsyaml.dump(body, { indent: 2, lineWidth: 120, noRefs: true });
         yamlText.value = metaBlock + bodyYaml;
         onYamlEdit();
       } catch (e) { console.error('veSave', e); }
@@ -1789,10 +1837,17 @@ createApp({
       veSave();
     }
     function veAddCol(half) {
-      const cols    = veData.value[half];
-      const maxCols = opts.value.columns / 2;
+      const cols = veData.value[half];
+      let maxCols;
+      if (half === 'emergency') {
+        maxCols = Math.floor(opts.value.columns / 2) - veData.value.walkaround.length;
+      } else if (half === 'walkaround') {
+        maxCols = Math.floor(opts.value.columns / 2) - veData.value.emergency.length;
+      } else {
+        maxCols = Math.ceil(opts.value.columns / 2);
+      }
       if (cols.length >= maxCols) {
-        showToast(`Max ${maxCols} column(s) per half (set in Checklist Setup)`, 'error');
+        showToast(`Max ${maxCols} column(s) for this area (adjust in Checklist Setup)`, 'error');
         return;
       }
       cols.push({ col: cols.length + 1, sections: [] });

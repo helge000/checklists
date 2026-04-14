@@ -38,13 +38,21 @@ normal:           # sections for the LEFT half, assigned to columns 1..ceil(N/2)
           - (note text):
             style: note
 
-emergency:        # sections for the RIGHT half, assigned to columns 1..floor(N/2)
+emergency:        # sections for the RIGHT half (leftmost right columns), assigned to columns 1..floor(N/2)
   - col: 1
     sections:
       - title: ENGINE FAILURE
         type: emergency
         items:
           - Glide: ESTABLISH
+
+walkaround:       # OPTIONAL – sections for the RIGHT half, occupying the rightmost columns
+                  # walkaround col 1 = rightmost physical column; emergency is pushed left
+  - col: 1
+    sections:
+      - title: EXTERNAL CHECK
+        items:
+          - Fuel Caps: SECURED
 """
 
 import sys
@@ -144,13 +152,19 @@ _font_cli      = "dejavu-mono" if args.monospaced else args.font
 _font_meta     = "dejavu-mono" if meta.get("monospaced") else meta.get("font")
 FONT_CHOICE    = _font_cli or _font_meta or DEFAULTS["font"]
 
-# ── YAML structure: normal / emergency → columns ──────────────────────────────
-# The YAML has two top-level lists: `normal` and `emergency`.
+# ── YAML structure: normal / emergency / walkaround → columns ─────────────────
+# The YAML has top-level lists: `normal`, `emergency`, and optionally `walkaround`.
 # Each is a list of {col: N, sections: [...]} dicts.
-# normal  → rendered on the LEFT  half (columns 1 … _left_cols)
-# emergency → rendered on the RIGHT half (columns 1 … _right_cols, offset by _left_cols)
+# normal     → rendered on the LEFT  half (columns 1 … _left_cols)
+# emergency  → rendered on the RIGHT half, starting from the left (col 1 …)
+# walkaround → rendered on the RIGHT half, occupying the rightmost columns
+#              walkaround col 1 = rightmost physical column of the right half
 _left_cols  = (N_COLS + 1) // 2
 _right_cols = N_COLS // 2
+
+_walkaround_data = data.get("walkaround", [])
+_walkaround_cols = len({entry["col"] for entry in _walkaround_data}) if _walkaround_data else 0
+_emerg_cols = _right_cols - _walkaround_cols  # emergency columns available in right half
 
 # ── YAML item parser ──────────────────────────────────────────────────────────
 _STYLE_MAP = {
@@ -310,13 +324,25 @@ def draw_title_bar():
     title_str = "  ".join(filter(None, [callsign, icao_type]))
 
     pad = CELL_PAD_X * 2
+
+    # When walkaround is active the right half gets a coloured label strip at the
+    # bottom of the bar (25 % of BAR_H).  Shift both text rows upward on that half
+    # so they don't collide with the strip; left half is always drawn as-is.
+    STRIP_H = BAR_H * 0.25 if _walkaround_cols > 0 else 0
+
     for x, w in [(left_x, left_w), (right_x, right_w)]:
         c.setFillColor(COL_BODY_GREY)
         c.rect(x, y_top - BAR_H, w, BAR_H, fill=1, stroke=0)
         c.setFillColor(COL_HEADER_BG)
 
+        if x == right_x and _walkaround_cols > 0:
+            row1_y = y_top - BAR_H * 0.26   # shifted up to clear strip
+            row2_y = y_top - BAR_H * 0.54
+        else:
+            row1_y = y_top - BAR_H * 0.40   # original positions
+            row2_y = y_top - BAR_H * 0.78
+
         # Row 1: title (left) + revision (right, small)
-        row1_y = y_top - BAR_H * 0.40
         c.setFont(FONT_BOLD, SIZE_TITLE)
         c.drawString(x + pad, row1_y, title_str)
         if revision:
@@ -324,9 +350,30 @@ def draw_title_bar():
             c.drawRightString(x + w - pad, row1_y, revision)
 
         # Row 2: model (left, smaller)
-        row2_y = y_top - BAR_H * 0.78
         c.setFont(FONT_NORMAL, SIZE_SUBTITLE)
         c.drawString(x + pad, row2_y, model)
+
+    # Coloured area-label strip at the bottom of the right half (walkaround only)
+    if _walkaround_cols > 0:
+        label_size = SIZE_NOTE
+        label_y    = y_top - BAR_H + (STRIP_H - label_size * 0.35278 * mm) / 2
+
+        if _emerg_cols > 0:
+            emerg_x = right_x
+            emerg_w = col_x(_left_cols + _emerg_cols) + COL_W - emerg_x
+            c.setFillColor(COL_EMERG_BG)
+            c.rect(emerg_x, y_top - BAR_H, emerg_w, STRIP_H, fill=1, stroke=0)
+            c.setFillColor(COL_HEADER_FG)
+            c.setFont(FONT_BOLD, label_size)
+            c.drawCentredString(emerg_x + emerg_w / 2, label_y, "EMERGENCY PROCEDURES")
+
+        walk_x = col_x(_left_cols + _emerg_cols + 1)
+        walk_w = right_x + right_w - walk_x
+        c.setFillColor(_HDR_COLORS["yellow"][0])
+        c.rect(walk_x, y_top - BAR_H, walk_w, STRIP_H, fill=1, stroke=0)
+        c.setFillColor(COL_HEADER_FG)
+        c.setFont(FONT_BOLD, label_size)
+        c.drawCentredString(walk_x + walk_w / 2, label_y, "WALKAROUND")
 
 # ── Dot leader ────────────────────────────────────────────────────────────────
 def draw_dot_leader(cx, text_y, label, callout,
@@ -477,13 +524,30 @@ for col_data in data.get("normal", []):
     for section in col_data.get("sections", []):
         cy = render_section(section, cx, cy, COL_W, default_type="normal")
 
-# Render emergency sections on right half (offset by _left_cols)
+# Render emergency sections on right half (leftmost right-half columns)
 for col_data in data.get("emergency", []):
     phys_col = _left_cols + col_data["col"]
     cx = col_x(phys_col)
     cy = Y_START
     for section in col_data.get("sections", []):
         cy = render_section(section, cx, cy, COL_W, default_type="emergency")
+
+# Draw a thin dashed separator between emergency and walkaround columns
+if _walkaround_cols > 0 and _emerg_cols > 0:
+    sep_x = col_x(_left_cols + _emerg_cols + 1) - COL_GAP / 2
+    c.setStrokeColor(colors.HexColor("#aaaaaa"))
+    c.setLineWidth(0.5)
+    c.setDash([2, 3])
+    c.line(sep_x, PAGE_H - OUTER_MARGIN, sep_x, OUTER_MARGIN)
+    c.setDash()
+
+# Render walkaround sections on right half (rightmost right-half columns)
+for col_data in _walkaround_data:
+    phys_col = _left_cols + _emerg_cols + col_data["col"]
+    cx = col_x(phys_col)
+    cy = Y_START
+    for section in col_data.get("sections", []):
+        cy = render_section(section, cx, cy, COL_W, default_type="normal")
 
 # ── Generated-by watermark (bottom-left) ─────────────────────────────────────
 c.setFont(FONT_NORMAL, 4.5)

@@ -1,6 +1,6 @@
 # Aviation Checklist Generator
 
-A tool for creating print-ready **A4 landscape PDF checklists** — designed for laminated cockpit cards with a centre fold. Normal procedures on the left half, emergency procedures on the right.
+A tool for creating print-ready **A4 landscape PDF checklists** — designed for laminated cockpit cards with a centre fold. Normal procedures on the left half, emergency procedures on the right. An optional walkaround checklist can occupy the rightmost column(s) of the right half.
 
 **Live version: [checklists.helgenberger.net](https://checklists.helgenberger.net/)**
 
@@ -101,7 +101,7 @@ python3 generate.py INPUT.yaml [OUTPUT.pdf] [options]
 |---|---|---|
 | `INPUT.yaml` | *(required)* | YAML checklist definition |
 | `OUTPUT.pdf` | `INPUT.pdf` | Output path (optional) |
-| `--columns N` | from YAML / `4` | Total columns 2–6 (left half: normal, right half: emergency) |
+| `--columns N` | from YAML / `4` | Total columns 2–6 (left half: normal, right half: emergency + optional walkaround) |
 | `--fold MM` | `8` | Centre fold margin in mm (each side) |
 | `--col-gap MM` | `3.0` | Gap between columns on the same half |
 | `--outer-margin MM` | `8` | Outer page margin in mm |
@@ -175,9 +175,9 @@ normal:
           - Vne: 178
             style: red
 
-# Emergency procedures — rendered on the RIGHT half
+# Emergency procedures — rendered on the RIGHT half (leftmost right columns)
 emergency:
-  - col: 1                        # col 1 of the right half = col 4 on the page
+  - col: 1                        # col 1 of the right half = col 4 on a 6-col page
     sections:
       - title: "ENGINE FAILURE AFTER T/O"
         items:
@@ -187,6 +187,24 @@ emergency:
             style: warn
           - EVACUATE:
             style: warn
+
+# Walkaround checklist — OPTIONAL
+# Occupies the RIGHTMOST column(s) of the right half; emergency is pushed left.
+# Col 1 = the rightmost physical column on the right half.
+# Omit this block entirely when not needed.
+walkaround:
+  - col: 1
+    sections:
+      - title: "LEFT WING"
+        header_color: green
+        items:
+          - Fuel Cap: SECURED
+          - Aileron: FREE & CORRECT
+      - title: "NOSE"
+        header_color: green
+        items:
+          - Oil Level: CHECK
+          - Propeller: NO DAMAGE
 ```
 
 ### Item styles
