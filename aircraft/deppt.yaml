@@ -2,7 +2,7 @@ meta:
   callsign: "DEPPT"
   icao_type: "R200"
   model: "Robin 2120 U"
-  revision: "Rev 1 | 23.03.2026"
+  revision: "Rev 2 | 14.04.2026"
   columns: 6
   font: dejavu-condensed
   scale: 1.0
@@ -286,7 +286,7 @@ emergency:
           - Perform emergency landing:
             style: warn
 
-  - col: 3
+  - col: 2
     sections:
       - title: "ELECTRICAL FIRE (DURING FLIGHT)"
         items:
@@ -297,3 +297,72 @@ emergency:
           - ALTN CB: "OFF"
           - Land ASAP:
             style: warn
+
+preflight:
+  - col: 1
+    sections:
+      - title: "① LEFT FUSELAGE"
+        header_color: yellow
+        items:
+          - Fuel filler cap: IN PLACE, LOCKED
+          - Static vent: CLEAN, UNOBSTRUCTED
+          - Tank drain valve: ACTUATED
+
+      - title: "② TAIL"
+        header_color: yellow
+        items:
+          - Horizontal stabilizer: SURFACE & HINGES
+          - Rudder: HINGES & PLAY
+
+      - title: "③ RIGHT FUSELAGE"
+        header_color: yellow
+        items:
+          - Static vent: CLEAN, UNOBSTRUCTED
+
+      - title: "④ RIGHT WING"
+        header_color: yellow
+        items:
+          - Flap, aileron: CONDITION & HINGES
+          - Wing tip / nav lights: CHECK CONDITION
+
+      - title: "⑤ RIGHT MAIN GEAR"
+        header_color: yellow
+        items:
+          - Stall warning: CLEAN / DISPLACEMENT
+          - Attachment & fairing: CHECK
+          - Shock absorber: NORMAL COMPRESSION
+          - Tyre: INFLATED
+
+      - title: "⑥ ENGINE"
+        header_color: blue
+        items:
+          - Oil level: CHECK / CAP SECURED
+          - Engine cowl attachment: CHECK
+          - Propeller: CLEAN, GOOD CONDITION
+          - Propeller spinner: NO PLAY
+          - Air inlets: CLEAN, UNOBSTRUCTED
+          - Landing light: WINDOW CLEAN
+
+      - title: "⑦ NOSE GEAR"
+        header_color: yellow
+        items:
+          - Attachment & fairing: CHECK
+          - Shock absorber: NORMAL COMPRESSION
+          - Tyre: INFLATED
+          - Tow bar: REMOVED
+          - Exhaust pipes: RIGID
+          - Canopy: CLEAN
+
+      - title: "⑧ LEFT MAIN GEAR"
+        header_color: yellow
+        items:
+          - Attachment & fairing: CHECK
+          - Shock absorber: NORMAL COMPRESSION
+          - Tyre: INFLATED
+          - Pitot: CLEAN, UNOBSTRUCTED
+
+      - title: "⑨ LEFT WING"
+        header_color: yellow
+        items:
+          - Wing tip / nav lights: CHECK CONDITION
+          - Flap, aileron: CONDITION & HINGES
