@@ -1,6 +1,6 @@
 # Aviation Checklist Generator
 
-A tool for creating print-ready **A4 landscape PDF checklists** — designed for laminated cockpit cards with a centre fold. Normal procedures on the left half, emergency procedures on the right. An optional walkaround checklist can occupy the rightmost column(s) of the right half.
+A tool for creating print-ready **A4 landscape PDF checklists** — designed for laminated cockpit cards with a centre fold. Normal procedures on the left half, emergency procedures on the right. An optional pre-flight checklist can occupy the rightmost column(s) of the right half.
 
 **Live version: [checklists.helgenberger.net](https://checklists.helgenberger.net/)**
 
@@ -101,7 +101,7 @@ python3 generate.py INPUT.yaml [OUTPUT.pdf] [options]
 |---|---|---|
 | `INPUT.yaml` | *(required)* | YAML checklist definition |
 | `OUTPUT.pdf` | `INPUT.pdf` | Output path (optional) |
-| `--columns N` | from YAML / `4` | Total columns 2–6 (left half: normal, right half: emergency + optional walkaround) |
+| `--columns N` | from YAML / `4` | Total columns 2–6 (left half: normal, right half: emergency + optional pre-flight) |
 | `--fold MM` | `8` | Centre fold margin in mm (each side) |
 | `--col-gap MM` | `3.0` | Gap between columns on the same half |
 | `--outer-margin MM` | `8` | Outer page margin in mm |
@@ -188,11 +188,11 @@ emergency:
           - EVACUATE:
             style: warn
 
-# Walkaround checklist — OPTIONAL
+# Pre-flight checklist — OPTIONAL
 # Occupies the RIGHTMOST column(s) of the right half; emergency is pushed left.
 # Col 1 = the rightmost physical column on the right half.
 # Omit this block entirely when not needed.
-walkaround:
+preflight:
   - col: 1
     sections:
       - title: "LEFT WING"

@@ -77,7 +77,7 @@ emergency:
           - Land without engine: null
             style: warn
           - New item: CALLOUT
-walkaround:
+preflight:
   - col: 1
     sections:
       - title: GENERAL
