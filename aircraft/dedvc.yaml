@@ -1,0 +1,372 @@
+meta:
+  callsign: "DEDVC"
+  icao_type: "C172"
+  model: "Reims/Cessna F172 M"
+  revision: "Rev.3 | 14.04.2026"
+  columns: 6
+  font: dejavu-condensed
+  scale: 1.0
+  line_spacing: 1.35
+  fold_margin_mm: 8
+  col_gap_mm: 3.0
+  outer_margin_mm: 8
+normal:
+  - col: 1
+    sections:
+      - title: COCKPIT PREPARATION
+        items:
+          - PIC: ESTABLISHED
+          - Preflight Inspection: COMPLETED
+          - Pitot Cover: REMOVED
+          - Mass & Balance: CHECKED
+          - Documents & Papers: ON BOARD
+          - Emergency Equipment: CHECKED
+          - GPS Main Switch: "OFF"
+          - Master Switch (ALT & BATT): "OFF"
+          - All elect. Equipment: "OFF"
+          - Circuit Breakers: CHECK IN
+          - Parking Brake: CHECKED/SET
+          - Fuel Selector: BOTH
+          - Doors: CLOSED & SECURED
+          - Seats & Belts: ADJUSTED & LOCKED
+      - title: BEFORE START
+        items:
+          - Master Switch (ALT & BAT): "ON"
+          - ATIS: AS REQUIRED
+          - Start Up Clearance: AS REQUIRED
+          - Beacon: "ON"
+          - DZ Headset: TURN ON
+          - SkyEcho: CHECK ON / GREEN
+          - SkyDemon: FLY
+      - title: STARTING ENGINE
+        header_color: blue
+        items:
+          - Carb. Heat: COLD (PUSHED)
+            style: blue
+          - Throttle: 3 CM OPEN
+          - Mixture: RICH
+          - Primer (cold): AS REQUIRED
+            style: blue
+          - inject 2 – 6 times maximum: null
+            style: note
+          - Propeller Area: CLEAR
+            style: blue
+          - Magnetos: START
+            style: blue
+          - Oil Pressure: CHECKED
+            style: blue
+          - Throttle: 1000 RPM
+            style: blue
+          - Ammeters: CHECKED
+          - slightly positive: CALLOUT
+            style: note
+          - Generator Warning Light: "OFF"
+          - SkyDemon: LOG ENGINE START
+      - title: AFTER START
+        items:
+          - Avionic Master: "ON"
+          - GPS Main Switch: "ON"
+          - Altimeters: SET
+          - COM / NAV / GNS: SET
+          - GPS Flight Plan: AS REQUIRED
+          - Flight Controls: FREE & CORRECT
+          - Flap Operation: CHECKED & UP
+          - Parking Brake: RELEASED
+      - title: TAXIING
+        items:
+          - Brakes: CHECKED
+          - Compass / Gyro / Horizon: CHECKED
+          - Turn Coordinator: CHECKED
+  - col: 2
+    sections:
+      - title: RUN UP
+        header_color: blue
+        items:
+          - Parking Brake: SET
+            style: blue
+          - Engine Instruments: GREEN ARC
+            style: blue
+          - Mixture: RICH
+            style: blue
+          - Throttle: 1700 RPM
+            style: blue
+          - Magnetos (L/R): CHECKED
+            style: blue
+          - (max. drop 125 RPM / diff. 50 RPM): null
+            style: note
+          - Carb. Heat: CHECKED
+            style: blue
+          - Engine Indicators: CHECKED
+            style: blue
+          - Ammeters: CHECKED
+            style: blue
+          - Suction: CHECKED
+            style: blue
+          - Throttle: IDLE then 1000 RPM
+      - title: BEFORE TAKEOFF
+        items:
+          - Flaps: 0° or 10° SET
+          - Thrust Lever Friction: ADJUST
+          - Trim: SET FOR T/O
+          - Doors & Windows: CLOSED
+          - Ldg. / Pos. Lights: AS REQUIRED
+          - Transponder: ALT / 7000
+          - T/O & Departure Briefing: PERFORMED
+          - Emergency Briefing: PERFORMED
+          - ATC Clearance: RECEIVED
+          - T/O Time: COPIED
+          - Parking Brake: RELEASED
+          - Pitot Heat: AS REQUIRED
+      - title: TAKE OFF
+        items:
+          - Gyro RWY HDG: CHECKED
+          - Instruments / Annunciations: CHECKED
+          - T/O POWER: ">2300 RPM"
+            style: blue
+          - ENG. INSTRUMENTS: GREEN
+          - ROTATE: 65-60kn
+        header_color: green
+      - title: OPERATING SPEEDS [IAS]
+        type: speeds
+        body_bg: true
+        items:
+          - Vr: 55
+          - Vclimb: 70 – 80
+          - Va: 97
+          - Vno: 127
+          - Vne: 159
+          - Vfe: 85
+          - Vs (flaps UP): 50
+          - Vs (flaps 20°): 45
+          - Vs (flaps 40°): 43
+          - V glide: 70
+            style: red
+          - Vcr-climb: 80 – 90
+          - Max XW T/O: 20
+          - Max XW LDG: 15
+  - col: 3
+    sections:
+      - title: AFTER TAKEOFF
+        header_color: green
+        items:
+          - Flaps (min. 400 ft AGL): UP
+          - Climb Power: SET
+          - Mixture: RICH
+          - Landing Light: "OFF"
+      - title: CRUISE
+        header_color: green
+        items:
+          - Power (max. 75%): 2200 – 2700 RPM
+          - (recommended max. 2300 RPM): null
+            style: note
+          - Mixture: AS REQUIRED
+          - Altimeter QNH / STD: SET
+          - Elevator Trim: ADJUST
+      - title: APPROACH
+        header_color: green
+        items:
+          - ATIS: RECEIVED
+          - Altimeters QNH: SET
+          - COM / NAV / GNS: SET
+          - (Vapp 65 – 75 KIAS): null
+            style: note
+          - Approach Briefing: PERFORMED
+          - Seats & Belts: FASTENED
+          - Mixture: ADJUSTED
+          - Fuel Selector: BOTH
+      - title: FINAL
+        header_color: green
+        items:
+          - Landing Light: "ON"
+          - Carb. Heat: AS REQUIRED
+          - Mixture: RICH
+          - Flaps: SET
+      - title: AFTER LANDING
+        header_color: yellow
+        items:
+          - Flaps: UP
+          - Carb. Heat: COLD (PUSHED)
+          - Transponder: SBY
+          - Pitot Heat: "OFF"
+          - Landing / Pos. Lights: "OFF"
+          - Landing Time: COPIED
+          - Flight Plan: CLOSED
+          - Taxiing Light: AS REQUIRED
+      - title: PARKING
+        header_color: yellow
+        items:
+          - Parking Brake: AS REQUIRED
+          - Throttle: 1000 RPM
+          - SkyDemon: LOG ON BLOCKS
+          - GPS Main Switch: "OFF"
+          - Avionic Master: "OFF"
+          - Mixture: IDLE CUT-OFF
+            style: blue
+          - SkyDemon: LOG ENGINE STOP
+          - Master Switch (Batt & Alt): "OFF"
+            style: blue
+          - Magnetos: "OFF"
+            style: blue
+          - SkyEcho: "OFF"
+          - DZ Headset: "OFF"
+          - Control Lock: AS REQ
+emergency:
+  - col: 1
+    sections:
+      - title: ENGINE FAILURE AFTER T/O
+        items:
+          - NOSE DOWN: null
+            style: warn
+          - Airspeed (flaps UP): 65 KIAS
+          - Airspeed (flaps 10°–full): 60 KIAS
+            style: note
+          - Fuel Shutoff Valve: "OFF"
+          - Mixture: IDLE CUTOFF
+          - Magnetos: OFF (PULL FULL OUT)
+          - Wing Flaps: AS REQUIRED
+          - Master Switch (ALT & BAT): "OFF"
+          - Cabin Door: UNLATCH
+          - style: warn
+            Land STRAIGHT AHEAD: null
+      - title: ENGINE FAILURE IN FLIGHT
+        items:
+          - Airspeed (max 100 KIAS): 70 KIAS
+          - Carb. Heat: WARM
+          - Fuel Selector: BOTH
+          - Mixture: RICH
+          - Magnetos: BOTH
+          - style: note
+            or START if prop stopped: null
+          - Primer: LOCKED (PUSHED)
+      - title: ENGINE FIRE IN FLIGHT
+        items:
+          - Mixture: IDLE CUTOFF
+          - Fuel Shutoff Valve: "OFF"
+          - Master Switch (ALT & BAT): "OFF"
+          - Cabin HT & Air Knobs: "OFF"
+          - Airspeed: 100 KIAS
+          - style: note
+            increase speed if fire continues: null
+          - style: warn
+            Execute Forced Landing: null
+      - title: ELECTRICAL FIRE IN FLIGHT
+        items:
+          - Master Switch (ALT & BAT): "OFF"
+          - Cabin HT & Air Knobs: "OFF"
+          - style: warn
+            Use Fire Extinguisher: null
+          - Avionic Master: "OFF"
+          - All other switches: "OFF"
+          - excl. magnetos: CALLOUT
+            style: note
+          - IF FIRE EXTINGUISHED: null
+            style: centered
+          - Cabin Vents: OPEN
+          - Cabin HT & Air Knobs: "ON"
+          - Circuit Breakers: CHECK
+          - style: note
+            do not reset open circuits: null
+          - Master Switch (ALT & BAT): "ON"
+          - Avionic Master: "ON"
+          - style: note
+            switch on radios individually: null
+          - GPS Main Switch: AS REQUIRED
+preflight:
+  - col: 1
+    sections:
+      - title: CABIN
+        header_color: yellow
+        items:
+          - Pitot Tube Cover: REMOVED
+          - Aircraft Papers: CHECKED
+          - POH Documents: ACCESSIBLE
+          - Mass & Balance: CHECKED
+          - Parking Brake: SET
+          - Control Wheel Lock: REMOVED
+          - Magneto Switch: "OFF"
+          - Avionic Master: "OFF"
+          - GPS Switch: "OFF"
+          - All elect. Equipment: "OFF"
+          - Master Switch (Alt & BAT): "ON"
+            style: blue
+          - Fuel Qty (L & R): CHECKED
+            style: blue
+          - Pitot Heat Switch: "ON"
+            style: blue
+          - (check warm to touch within 30s): null
+            style: note
+          - Pitot Heat Switch: "OFF"
+            style: blue
+          - Flaps: FULL DOWN
+            style: blue
+          - Master Switch (Alt & BAT): "OFF"
+            style: blue
+          - Elevator Trim: T/O POSITION
+          - Fuel Selector: BOTH
+          - Fire Extinguisher: GREEN ARC
+          - ELT: ARM / CHECKED
+      - title: ① LIGHTS
+        items:
+          - Positions & Beacon: TESTED
+          - Landing & Taxi Lights: TESTED
+        header_color: yellow
+      - title: ② TAIL
+        items:
+          - Baggage Compartment Door: LOCKED
+          - Rudder Gust Lock (aft): REMOVED
+          - Tail Tie-Down: DISCONNECTED
+          - Control Surfaces: FREE & SECURE
+          - Elevator Trim Tab: FREE & TIGHT
+          - Antennas: CONDITION & TIGHT
+        header_color: yellow
+  - col: 2
+    sections:
+      - title: ③ RIGHT WING
+        items:
+          - Flaps: CONDITION & SECURE
+          - Aileron: FREE & SECURE
+        header_color: yellow
+      - title: ④ RIGHT WINGTIP
+        items:
+          - Wing Tie-Down: DISCONNECTED
+          - Main Wheel Tyre: CONDITION
+          - Fuel Tank Drain: CLEAN SAMPLE
+          - 1st flight of the day: CALLOUT
+            style: note
+          - Fuel Quantity: CHECK & CAP TIGHT
+        header_color: yellow
+      - title: ⑤ NOSE
+        header_color: blue
+        items:
+          - Oil Level: CHECK
+          - style: note
+            min. 6 qts / fill to 8: CALLOUT
+          - Fuel Strainer Drain: PULL & SECURE
+          - 1st flight of the day: CALLOUT
+            style: note
+          - Propeller & Spinner: CHECKED
+          - Generator Belt: TIGHT
+          - Air Intakes & Filters: CHECKED
+          - Nosewheel Strut & Tyre: CHECKED
+          - Static Source Opening: CLEAR
+      - title: ⑥ LEFT WING
+        items:
+          - Main Wheel Tyre: CHECKED
+          - Fuel Tank Drain: CLEAN SAMPLE
+          - 1st flight of the day: CALLOUT
+            style: note
+          - Fuel Quantity: CHECK & CAP TIGHT
+        header_color: yellow
+      - title: ⑦ LEFT WINGTIP
+        items:
+          - Pitot Cover: REMOVED
+          - Fuel Tank Vent: UNOBSTRUCTED
+          - Stall Warning Opening: UNOBSTRUCTED
+          - Wing Tie-Down: DISCONNECTED
+          - Landing / Taxi Light: CHECKED
+        header_color: yellow
+      - title: ⑧ LEFT WING (AFT)
+        items:
+          - Aileron: FREE & SECURE
+          - Flaps: CONDITION & SECURE
+        header_color: yellow
