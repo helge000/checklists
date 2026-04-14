@@ -550,9 +550,46 @@ for col_data in _preflight_data:
         cy = render_section(section, cx, cy, COL_W, default_type="normal")
 
 # ── Generated-by watermark (bottom-left) ─────────────────────────────────────
-c.setFont(FONT_NORMAL, 4.5)
-c.setFillColor(colors.HexColor("#aaaaaa"))
-c.drawString(OUTER_MARGIN, OUTER_MARGIN * 0.45,
+_disc_color = colors.HexColor("#555555")
+_icon_size = 7.0          # pt — matches text line height
+_ix = OUTER_MARGIN
+_text_y = OUTER_MARGIN * 0.75
+_icon_y = _text_y - 1     # icon sits 1 pt lower than text baseline
+_sc = _icon_size / 24.0   # scale from 24×24 SVG viewBox
+
+def _tx(sx): return _ix + sx * _sc
+def _ty(sy): return _icon_y + (24 - sy) * _sc   # flip Y: SVG top→PDF top
+
+# Path: M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9
+#        l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z
+_p = c.beginPath()
+_p.moveTo(_tx(21), _ty(16))
+_p.lineTo(_tx(21), _ty(14))                                    # v-2
+_p.lineTo(_tx(13), _ty(9))                                     # l-8-5
+_p.lineTo(_tx(13), _ty(3.5))                                   # V3.5
+_p.curveTo(_tx(13), _ty(2.67), _tx(12.33), _ty(2),            # c0-.83-.67-1.5-1.5-1.5
+           _tx(11.5), _ty(2))
+_p.curveTo(_tx(10.67), _ty(2), _tx(10), _ty(2.67),            # S10 2.67 10 3.5
+           _tx(10), _ty(3.5))
+_p.lineTo(_tx(10), _ty(9))                                     # V9
+_p.lineTo(_tx(2),  _ty(14))                                    # l-8 5
+_p.lineTo(_tx(2),  _ty(16))                                    # v2
+_p.lineTo(_tx(10), _ty(13.5))                                  # l8-2.5
+_p.lineTo(_tx(10), _ty(19))                                    # V19
+_p.lineTo(_tx(8),  _ty(20.5))                                  # l-2 1.5
+_p.lineTo(_tx(8),  _ty(22))                                    # V22
+_p.lineTo(_tx(11.5), _ty(21))                                  # l3.5-1
+_p.lineTo(_tx(15), _ty(22))                                    # l3.5 1
+_p.lineTo(_tx(15), _ty(20.5))                                  # v-1.5
+_p.lineTo(_tx(13), _ty(19))                                    # L13 19
+_p.lineTo(_tx(13), _ty(13.5))                                  # v-5.5
+_p.close()
+c.setFillColor(_disc_color)
+c.drawPath(_p, fill=1, stroke=0)
+
+c.setFont(FONT_NORMAL, 6)
+c.setFillColor(_disc_color)
+c.drawString(_ix + _icon_size + 2, _text_y,
              "Generated using https://checklists.helgenberger.net/")
 
 c.save()
