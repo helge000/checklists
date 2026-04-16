@@ -2,13 +2,13 @@ meta:
   callsign: "DEDVC"
   icao_type: "C172"
   model: "Reims/Cessna F172 M"
-  revision: "Rev.3 | 14.04.2026"
+  revision: "Rev.4 15.04.2026"
   columns: 6
   font: dejavu-condensed
-  scale: 1.0
-  line_spacing: 1.35
+  scale: 1.07
+  line_spacing: 1.4
   fold_margin_mm: 8
-  col_gap_mm: 3.0
+  col_gap_mm: 3
   outer_margin_mm: 8
 normal:
   - col: 1
@@ -29,12 +29,8 @@ normal:
           - Fuel Selector: BOTH
           - Doors: CLOSED & SECURED
           - Seats & Belts: ADJUSTED & LOCKED
-      - title: BEFORE START
-        items:
-          - Master Switch (ALT & BAT): "ON"
           - ATIS: AS REQUIRED
           - Start Up Clearance: AS REQUIRED
-          - Beacon: "ON"
           - DZ Headset: TURN ON
           - SkyEcho: CHECK ON / GREEN
           - SkyDemon: FLY
@@ -49,6 +45,8 @@ normal:
             style: blue
           - inject 2 – 6 times maximum: null
             style: note
+          - Master Switch (ALT & BAT): "ON"
+          - Beacon Lt: "ON"
           - Propeller Area: CLEAR
             style: blue
           - Magnetos: START
@@ -77,6 +75,7 @@ normal:
           - Brakes: CHECKED
           - Compass / Gyro / Horizon: CHECKED
           - Turn Coordinator: CHECKED
+        header_color: green
   - col: 2
     sections:
       - title: RUN UP
@@ -92,7 +91,7 @@ normal:
             style: blue
           - Magnetos (L/R): CHECKED
             style: blue
-          - (max. drop 125 RPM / diff. 50 RPM): null
+          - max. drop 125 RPM / diff. 50 RPM: null
             style: note
           - Carb. Heat: CHECKED
             style: blue
@@ -124,7 +123,7 @@ normal:
           - T/O POWER: ">2300 RPM"
             style: blue
           - ENG. INSTRUMENTS: GREEN
-          - ROTATE: 65-60kn
+          - ROTATE: 55-60kn
         header_color: green
       - title: OPERATING SPEEDS [IAS]
         type: speeds
@@ -135,6 +134,7 @@ normal:
           - Va: 97
           - Vno: 127
           - Vne: 159
+            style: red
           - Vfe: 85
           - Vs (flaps UP): 50
           - Vs (flaps 20°): 45
@@ -157,8 +157,6 @@ normal:
         header_color: green
         items:
           - Power (max. 75%): 2200 – 2700 RPM
-          - (recommended max. 2300 RPM): null
-            style: note
           - Mixture: AS REQUIRED
           - Altimeter QNH / STD: SET
           - Elevator Trim: ADJUST
@@ -168,8 +166,8 @@ normal:
           - ATIS: RECEIVED
           - Altimeters QNH: SET
           - COM / NAV / GNS: SET
-          - (Vapp 65 – 75 KIAS): null
-            style: note
+          - style: centered
+            Vapp 65 – 75 KIAS: null
           - Approach Briefing: PERFORMED
           - Seats & Belts: FASTENED
           - Mixture: ADJUSTED
@@ -219,7 +217,6 @@ emergency:
             style: warn
           - Airspeed (flaps UP): 65 KIAS
           - Airspeed (flaps 10°–full): 60 KIAS
-            style: note
           - Fuel Shutoff Valve: "OFF"
           - Mixture: IDLE CUTOFF
           - Magnetos: OFF (PULL FULL OUT)
@@ -293,7 +290,7 @@ preflight:
             style: blue
           - Pitot Heat Switch: "ON"
             style: blue
-          - (check warm to touch within 30s): null
+          - check warm to touch within 30s: null
             style: note
           - Pitot Heat Switch: "OFF"
             style: blue
@@ -360,8 +357,8 @@ preflight:
       - title: ⑦ LEFT WINGTIP
         items:
           - Pitot Cover: REMOVED
-          - Fuel Tank Vent: UNOBSTRUCTED
-          - Stall Warning Opening: UNOBSTRUCTED
+          - Fuel Tank Vent: CLEAR
+          - Stall Warning: TESTED
           - Wing Tie-Down: DISCONNECTED
           - Landing / Taxi Light: CHECKED
         header_color: yellow
