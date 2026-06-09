@@ -1,0 +1,398 @@
+meta:
+  callsign: "DELEL"
+  icao_type: "C172"
+  model: "Cessna C172 G1000"
+  revision: "Rev 4 | 2026-06-08"
+  columns: 6
+  font: dejavu-condensed
+  scale: 1.0
+  line_spacing: 1.35
+  fold_margin_mm: 8
+  col_gap_mm: 3.0
+  outer_margin_mm: 8
+normal:
+  - col: 1
+    sections:
+      - title: COCKPIT PREPARATION
+        header_color: black
+        items:
+          - Preflight Inspection: COMPLETED
+          - Pitot Cover: REMOVED
+          - Mass & Balance: CHECKED
+          - Documents & Papers: ON BOARD
+          - Emergency Equipment: CHECKED
+          - Avionics (BUS 1 & BUS 2): 'OFF'
+          - All elect. Equipment: 'OFF'
+          - Circuit Breakers: CHECK IN
+          - Parking Brake: TEST and SET
+          - Fuel Shutoff Valve: (push) ON
+          - Fuel Selector: BOTH
+          - Doors: CLOSED & SECURED
+          - Seats & Belts: ADJUSTED & LOCKED
+          - DZ Headset: TURN ON
+          - SkyEcho: CHECK ON / GREEN
+          - SkyDemon: FLY
+      - title: BEFORE START
+        items:
+          - Stby Batt (green 20 sec.): TEST
+          - Stby Batt (check PFD): ARM
+          - Engine Indicating System: CHECKED
+          - (no red X's): null
+            style: note
+          - E Bus min. 24V: CHECKED
+          - M Bus max. 1,5V: CHECKED
+          - S Bus negative: CHECKED
+          - Stby Batt Annunciator: CHECKED
+          - style: note
+            verify annunciator is shown: null
+          - Master Switch (ALT & BAT): 'ON'
+          - Beacon Light Switch: 'ON'
+          - Throttle Control: 0,6 cm OPEN
+          - Mixture Control: IDLE CUT-OFF
+          - Propeller Area: CLEAR
+      - title: ENGINE START
+        items:
+          - — COLD START —: null
+            style: centered_blue
+          - Fuel Pump Switch: 'ON'
+          - Mixture Control: SET to FULL RICH
+          - style: note
+            appr. 3 to 5 sec then IDLE CUT-OFF: null
+          - Fuel Pump Switch: 'OFF'
+          - Magnetos Switch: START
+            style: blue
+          - Mixture Control (smoothly): RICH
+            style: blue
+          - Oil Pressure: CHECKED
+            style: blue
+          - Throttle: 1000 RPM
+            style: blue
+          - Amps (M Batt & S Batt): CHECKED
+            style: blue
+          - style: note
+            verify charge shown positive: null
+          - Indication "Low Volts": OFF/CHECKED
+          - SkyDemon: LOG ENG START
+      - title: OPERATING SPEEDS [KIAS]
+        type: speeds
+        body_bg: true
+        items:
+          - Vr: 55
+          - Vx: 62
+          - Vy: 70
+          - VA: 90-105
+          - Vno: 129
+          - Vfe 10°: 110
+          - Vfe 20°-30°: 85
+          - Vs FE UP: 48
+          - Vs FE 10°-20°: 43
+          - Vs FE 30°: 40
+          - Vcruise Climb: 85
+          - Vref FE UP: 63
+            style: red
+          - Vref FE 10°-20°: 60
+            style: red
+          - Vref FE 30°: 52
+            style: red
+          - Vne: 163
+            style: red
+  - col: 2
+    sections:
+      - title: AFTER START
+        items:
+          - Avionic Bus 1: 'ON'
+          - (forward fan operating): null
+            style: note
+          - Avionic Bus 2: 'ON'
+          - (rear fan operating): null
+            style: note
+          - Flight Instruments (PFD): CHECK
+          - (no red X's): null
+            style: note
+          - 'Altimeters: PFD & Stby-Alt': SET
+          - COM, NAV, GNS for Departure: SET
+          - FMS/GPS Flight Plan: AS DESIRED
+          - Fuel Quantity: SET/CHECK
+          - Standby Flight Instruments: CHECK
+          - Flight Controls: FREE and CORRECT
+          - Flap Operation: CHECKED & UP
+          - Taxi Light: AS REQUIRED
+          - Parking Brake: RELEASED
+      - title: TAXIING
+        header_color: blue
+        items:
+          - Brakes: CHECKED
+          - Compass / Gyro / Horizon: CHECKED
+          - Turn Coordinator: CHECKED
+      - title: RUN UP
+        header_color: blue
+        items:
+          - Taxi Light: 'OFF'
+          - Parking Brake: SET
+          - Engine Instruments: GREEN ARC
+          - Mixture Control: RICH
+          - Throttle Control: 1800 RPM
+          - Magnetos (L/R): CHECKED
+          - (max. drop 150 RPM / diff. 50 RPM): null
+            style: note
+          - VAC Indicator: NO INDICATION
+          - Engine Indicators: CHECKED
+          - Ammeters and Voltmeters: CHECKED
+          - Annunciators: CHECKED
+          - Throttle: IDLE then 1000 RPM
+      - title: BEFORE TAKEOFF
+        header_color: blue
+        items:
+          - Autopilot (push AP): ENGAGE
+          - Flight Controls: CHECK
+          - style: note
+            verify AP overpowered pitch+roll: null
+          - A/P Trim Disc Button: PRESS
+          - style: note
+            verify AP disengages + aural alert: null
+          - Flight Director: 'OFF'
+          - Flaps (0° or 10°): SET (10° pref.)
+          - Thrust Lever Friction Ctrl: ADJUST
+          - Trim: SET for T/O
+          - Doors & Windows: CLOSED
+          - Strobe Light: 'ON'
+          - Ldg.- / Nav-Lights: AS REQUIRED
+          - XPDR: ALT
+          - Pitot Heat: AS REQUIRED
+          - T/O & Departure Briefing: PERFORMED
+          - Emergency Briefing: PERFORMED
+          - ATC Clearance: RECEIVED
+          - T/O Time: COPIED
+          - Instruments / Annunciations: CHECKED
+          - Gyro: SET RWY HDG
+          - Parking Brake: RELEASED
+  - col: 3
+    sections:
+      - title: AFTER TAKEOFF
+        header_color: green
+        items:
+          - Flaps (min. 400 ft AGL): UP
+          - Climb Power: SET
+          - Mixture: RICH
+          - Landing Light: 'OFF'
+      - title: CRUISE
+        header_color: green
+        items:
+          - Power (max. 75%): (2100-2700) SET
+          - Mixture: LEANED
+          - style: note
+            50'F Rich of Peak EGT: CALLOUT
+          - Altimeter QNH / STD: SET
+      - title: APPROACH
+        header_color: green
+        items:
+          - ATIS: (if possible) RECEIVED
+          - Altimeters QNH: SET
+          - COM, NAV, GNS: for Approach SET
+          - Vapp: 100 KIAS
+          - Approach Briefing: PERFORMED
+          - Seats & Belts: FASTENED
+          - Mixture: ADJUSTED
+          - Fuel Selector: BOTH
+          - Magnetos: BOTH
+      - title: FINAL
+        header_color: green
+        items:
+          - Landing Light: 'ON'
+          - Mixture: RICH
+          - Flaps: SET
+          - Autopilot: DISENGAGE
+      - title: AFTER LANDING
+        header_color: yellow
+        items:
+          - Flaps: UP
+          - Pitot Heat: 'OFF'
+          - Strobe- / Ldg.- / Nav.-Lights: 'OFF'
+          - Transponder: CHECK (GND)
+          - Landing Time: COPIED
+          - Flight Plan: CLOSED
+          - Taxi Light: AS REQUIRED
+      - title: PARKING
+        header_color: yellow
+        items:
+          - Parking Brake: AS REQUIRED
+          - Throttle Control: IDLE
+          - SkyDemon: LOG ON BLKS
+          - Taxi Light and elec. Equip.: 'OFF'
+          - Avionic Bus 1 & 2: 'OFF'
+          - Mixture: IDLE CUT-OFF
+          - Magnetos: 'OFF'
+          - SkyDemon: LOG ENG STOP
+          - Master Switch (Batt & Alt): 'OFF'
+          - STBY Battery: 'OFF'
+          - SkyEcho: TURN OFF
+          - DZ Headset: TURN OFF
+          - Control Lock: INSTALLED
+emergency:
+  - col: 1
+    sections:
+      - title: ENGINE FAILURE AFTER T/O
+        items:
+          - — NOSE DOWN —: null
+            style: centered
+          - Airspeed (Flaps UP): 70 KIAS
+            style: red
+          - Airspeed (Flaps 10°-FULL): 65 KIAS
+            style: red
+          - Shutoff Valve: (pull full out) OFF
+          - Mixture Control: IDLE CUTOFF
+          - Magnetos Switch: (pull full out) OFF
+          - Wing Flaps: AS REQUIRED
+          - STBY BATT Switch: 'OFF'
+          - MASTER Switch (ALT & BAT): 'OFF'
+          - Cabin Door: UNLATCH
+          - Land: STRAIGHT AHEAD
+            style: warn
+      - title: ENGINE FAILURE DURING FLIGHT
+        items:
+          - (RESTART PROCEDURES): null
+            style: note
+          - Airspeed (max 100 KIAS): 68 KIAS
+            style: red
+          - Fuel Shutoff Valve: (push full in) OPEN
+          - Fuel Selector: BOTH
+          - Fuel Pump: 'ON'
+          - Mixture: RICH
+          - Magnetos Switch: BOTH
+          - style: note
+            or START if propeller is stopped: null
+          - Fuel Pump (after Restart): 'OFF'
+      - title: ENGINE FIRE (IN FLIGHT)
+        items:
+          - Fuel Shutoff Valve: (pull full out) OFF
+          - Mixture Control: IDLE CUTOFF
+          - Fuel Pump Switch: 'OFF'
+          - Master Switch (ALT & BAT): 'OFF'
+          - Cabin Vents: (as needed) OPEN
+          - Cabin HT & Air Ctrl Knobs: 'OFF'
+          - Airspeed: 100 KIAS
+          - style: note
+            If fire not extinguished, increase: null
+          - style: note
+            glide speed within limitations: null
+          - Forced Landing: EXECUTE
+            style: warn
+      - title: ELECTRICAL FIRE (IN FLIGHT)
+        items:
+          - Stby Batt Switch: 'OFF'
+          - Master Switch (ALT & BAT): 'OFF'
+          - Cabin Vents: (avoid drafts) CLOSED
+          - Cabin HT & Air Ctrl Knobs: 'OFF'
+          - Fire Extinguisher: (if avail.) ACTIVATE
+          - Avionics (BUS 1 & BUS 2): 'OFF'
+          - All Other Switches: 'OFF'
+          - style: note
+            except Magnetos switch: null
+      - title: ELEC. FIRE — EXTINGUISHED
+        items:
+          - — IF FIRE HAS BEEN EXTINGUISHED —: null
+            style: centered
+          - Cabin Vents: OPEN
+          - Cabin HT & Air Ctrl Knobs: 'ON'
+          - Circuit Breakers: CHECK
+          - (for OPEN circuits, do not reset): null
+            style: note
+          - Master Switch (ALT & BAT): 'ON'
+          - Stby Batt Switch: ARM
+          - Avionics Switch (BUS 1 & 2): 'ON'
+preflight:
+  - col: 1
+    sections:
+      - title: CABIN
+        header_color: black
+        items:
+          - Pitot Tube Cover: REMOVED
+          - Aircraft Papers & POH: CHECKED
+          - Mass & Balance: CHECKED
+          - Parking Brake: SET
+          - Control Wheel Lock: REMOVED
+          - Magneto Switch: 'OFF'
+          - Avionic (BUS1/2): 'OFF'
+          - Master Switch (Alt & BAT): 'ON'
+          - PFD: CHECKED & ON
+          - Fuel Qty (L & R): CHECKED
+          - Low Fuel L/R Warning: 'OFF'
+          - Oil Pressure Warning: 'ON'
+          - Low Vacuum Warning: NO FUNCTION
+          - Avionic BUS1: ON (verify fan)
+          - Forward Avionic Fan: CHECKED
+          - Avionic BUS1: 'OFF'
+          - Avionic BUS2: ON (verify fan)
+          - Aft Avionic Fan: CHECKED
+          - Avionic BUS2: 'OFF'
+          - Pitot Heat Switch: 'ON'
+          - style: note
+            warm to touch within 30 sec: null
+          - Pitot Heat Switch: 'OFF'
+          - Low Volts Warning: 'ON'
+          - Master Switch (Alt & BAT): 'OFF'
+          - Elevator Trim Control: T/O POSITION
+          - Fuel Selector: BOTH
+          - Alt Static Air Valve: (pushed) OFF
+          - Fire Extinguisher: (green Arc) CHECKED
+  - col: 2
+    sections:
+      - title: OUTSIDE
+        header_color: black
+        items:
+          - — 1. LIGHTS —: null
+            style: centered
+          - Position & Strobe Lights: TESTED
+          - Landing & Taxi Lights: TESTED
+          - — 2. EMPENNAGE —: null
+            style: centered
+          - Baggage Door: CLOSED
+          - Rudder Gust Lock: REMOVE
+          - Tail Tiedown: DISCONNECT
+          - Control Surfaces: FREE & SECURE
+          - Elevator Trim Tab: FUNCTION & FIT
+          - Antennas: CONDITION & FIT
+          - Static Discharger: CHECKED
+          - — 3. RIGHT WING AFT —: null
+            style: centered
+          - Flaps: SECURITY & COND.
+          - Aileron: FREE & SECURE
+          - Static Discharger: CHECKED
+          - — 4. RIGHT WING FWD —: null
+            style: centered
+          - Wing Tiedown: DISCONNECT
+          - Main Wheel Tire: INFL. & COND.
+          - Fuel Tank Drains (5x): DRAIN & CHECK
+          - Fuel Quantity: VISUAL CHECK
+          - Fuel Filler Cap: TIGHT FIT
+          - — 5. NOSE —: null
+            style: centered
+          - Oil Level: MIN 5 QTS
+          - longer flights fill to 8 qts, standard 7 qts: null
+            style: note
+          - Fuel Strainer Drain (3x): DRAIN & CHECK
+          - Propeller & Spinner: NOTCHES & FIT
+          - Generator Belt: TIGHT FIT
+          - Air Intakes & Filters: CHECKED
+          - Nosewheel Strut & Tire: INFL. & COND.
+          - Static Source Opening: NO BLOCKAGE
+          - — 6. LEFT WING FWD —: null
+            style: centered
+          - Main Wheel Tire: INFL. & COND.
+          - Fuel Tank Drains (5x): DRAIN & CHECK
+          - Fuel Quantity: VISUAL CHECK
+          - Fuel Filler Cap: TIGHT FIT
+          - — 7. LEFT WING FRONT —: null
+            style: centered
+          - Pitot Cover: REMOVE
+          - Pitot Tube Opening: NO BLOCKAGE
+          - Fuel Tank Vent Opening: NO BLOCKAGE
+          - Stall Warning Opening: NO BLOCKAGE
+          - Wing Tiedown: DISCONNECT
+          - Landing/Taxi Light: COND. & CLEAN
+          - — 8. LEFT WING AFT —: null
+            style: centered
+          - Flaps: SECURITY & COND.
+          - Aileron: FREE & SECURE
+          - Static Discharger: CHECKED
+
