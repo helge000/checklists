@@ -2,7 +2,7 @@ meta:
   callsign: "DEADX"
   icao_type: "DA40"
   model: "Diamond DA40 D CD155"
-  revision: "Rev.5 21.07.2026"
+  revision: "Rev.6 | 28.07.2026"
   columns: 6
   font: dejavu-condensed
   scale: 1.1
@@ -24,6 +24,7 @@ normal:
           - Seat Belts: FASTENED
           - Door / Canopy: CLOSED & LOCKED
           - Power Lever: IDLE
+          - Circuit Breakers: IN
           - Emer. Fuel Transf.: NORMAL
           - Fuel Transfer Switch: 'OFF'
           - style: blue
@@ -58,21 +59,20 @@ normal:
             Annunciator: CHECK
           - No alerts within 3sec: null
             style: note
-          - Engine / PT heat remain: null
-            style: note
           - style: note
-            ELEC TRIM FAIL - WAIT FOR AP STARTUP: null
-          - style: note
-            LEAVE MAN. TRIM ALONE: CALLOUT
+            PT heat remains: null
           - Throttle: IDLE 2 MIN
       - title: AFTER START
         items:
           - Aviomic Master: 'ON'
+          - style: note
+            ELEC TRIM FAIL - WAIT FOR AP STARTUP: null
+          - style: note
+            leave mechanical trim alone: null
           - Altimeters: SET FIELD ELV. (4×)
           - Radios: SET
           - Engine Indicators: CHECK
           - Transponder: GND
-          - Circuit Breaker: IN
           - Flaps: T/O → LDG → T/O → UP
           - Pitot Heat: ON → OFF
           - Check Annunciator: null
@@ -113,8 +113,7 @@ normal:
             Voter Switch: AUTO → B → AUTO
           - style: note
             Engine RPM - change, then smooth idle: null
-          - style: blue
-            ALT AIR: CHECK -> SMOOTH IDLE
+          - Alt. Air: CHECK -> SMOOTH IDLE
       - title: BEFORE TAKE OFF
         items:
           - Flight Controls: CHECK
@@ -141,7 +140,6 @@ normal:
           - Engine Indicators: GREEN
           - Elevator: neutral
             style: blue
-          - Rudder: right foot
           - Rotation: 55-59 KIAS
           - Initial Climb speed: 66 KIAS
         header_color: green
@@ -319,7 +317,7 @@ emergency:
           - CABIN HEAT: 'ON'
           - AIR SUPPLY: DEFROST
           - POWER: INCREASE
-          - ALT AIR: OPEN
+          - ALT AIR: 'ON'
           - Open Window: IF REQUIRED
       - title: SPIN RECOVERY
         items:
@@ -375,3 +373,4 @@ emergency:
             style: note
           - Expect engine to fail – land ASAP: null
             style: warn
+  
