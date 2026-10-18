@@ -1,0 +1,386 @@
+meta:
+  callsign: "DEKPR"
+  icao_type: "PA28"
+  model: "Piper PA-28"
+  revision: "Rev 1  |  2026-10"
+  columns: 6
+  font: dejavu-condensed
+  scale: 1
+  line_spacing: 1.35
+  fold_margin_mm: 8
+  col_gap_mm: 3
+  outer_margin_mm: 8
+normal:
+  - col: 1
+    sections:
+      - title: BEFORE START
+        items:
+          - PIC: ESTEBLISHED
+          - Tach / Hobbs: NOTED
+          - Seat Belts: FASTENED
+          - Battery: 'ON'
+          - Beacon: 'ON'
+          - Nav Lights: AS REQ.
+          - Fuel Selector: RIGHT TANK
+          - Electric Fuel Pump: CHECK (2x)
+            style: blue
+          - SkyDemon: FLY
+            style: blue
+          - SkyEcho: ON / GREEN
+            style: blue
+      - title: ENGINE START
+        header_color: blue
+        items:
+          - Parking Brake: SET
+          - Electric Fuel Pump: 'ON'
+            style: blue
+          - Mixture: FULL RICH
+          - Throttle: ¼" OPEN
+          - Prime: 3 TIMES
+          - Prop Area: CLEAR
+          - Starter: ENGAGE
+            style: blue
+          - Throttle: 1000 RPM
+          - Engine Instruments: CHECK
+          - Alternator: 'ON'
+          - Annunciators: 'OFF'
+          - SkyDemon: LOG ENGINE START
+      - title: HOT ENGINE START
+        items:
+          - Throttle: ½" OPEN
+          - Battery / Alternator: 'ON'
+          - Electric Fuel Pump: 'ON'
+          - Mixture: FULL RICH
+          - Starter: ENGAGE
+          - Throttle: 1000 RPM
+          - Oil Pressure: CHECK
+        header_color: blue
+      - title: AFTER START
+        items:
+          - Avionics: 'ON'
+          - Radios: SET
+          - Transponder: STBY
+          - Circuit Breakers: IN
+          - Mixture: LEAN FOR TAXI
+      - title: TAXI
+        items:
+          - Toe Brakes: CHECK
+          - Gyro Compass: CHECK
+  - col: 2
+    sections:
+      - title: RUN UP
+        header_color: blue
+        items:
+          - Brakes: SET
+          - Mixture: FULL RICH
+          - Throttle: 2000 RPM
+            style: blue
+          - Engine Instruments: IN LIMITS
+          - Magnetos (L–BOTH–R–BOTH): CHECK
+            style: blue
+          - Annunciators: TEST
+          - Carb Heat: CHECK
+            style: blue
+          - Gyro Suction: IN LIMITS
+          - Throttle: IDLE
+          - Oil Press. & Temp.: IN LIMITS
+          - Throttle: 1000 RPM
+      - title: BEFORE TAKE OFF
+        items:
+          - Flight Controls: CHECK
+          - Flight Instruments: SET
+          - Radios: SET
+          - Gyro Instruments: SET
+          - Altimeter: SET
+          - Flaps: AS REQ.
+          - Electric Trim: SET
+          - Trim: SET T/O
+          - T/O & Emer. Briefing: COMPLETE
+          - Doors & Windows: SECURED
+          - Parking Brake: RELEASED
+          - Fuel Pump: 'ON'
+            style: blue
+          - ACL: 'ON'
+          - Landing Light: 'ON'
+          - Transponder: ALTITUDE
+          - Time Off: NOTED
+      - title: OPERATING SPEEDS [KIAS]
+        type: speeds
+        body_bg: true
+        items:
+          - VR: 45–55
+          - VX: 64
+          - VY: 76
+          - Climb: 88
+          - VS: 50
+          - VS0: 44
+          - VA: 89–113
+          - VFE: 102
+          - VNO: 125
+          - VNE: 154
+            style: red
+          - GLIDE: 76
+            style: red
+          - Max X-Wind: 17
+  - col: 3
+    sections:
+      - title: AFTER TAKE OFF
+        header_color: green
+        items:
+          - Flaps: UP
+          - Landing Light: 'OFF'
+          - Electric Fuel Pump: 'OFF'
+      - title: CRUISE
+        header_color: green
+        items:
+          - Throttle: SET RPM
+          - Mixture: LEANED
+      - title: APPROACH
+        header_color: green
+        items:
+          - Flight Instruments: CHECK & SET
+          - Radios: SET
+          - Landing Light: 'ON'
+          - Fuel Pump: 'ON'
+            style: blue
+          - Mixture: FULL RICH
+          - Fuel Selector: RIGHT TANK
+          - Approach Briefing: COMPLETE
+          - Seat Belts: FASTENED
+          - Carb Heat: AS REQ.
+      - title: AFTER LANDING
+        header_color: yellow
+        items:
+          - Transponder: STBY
+          - Landing Light: 'OFF'
+          - ACL: 'OFF'
+          - Mixture: LEANED
+          - Flaps: UP
+          - Time: NOTED
+          - Carb Heat: 'OFF'
+      - title: PARKING
+        header_color: yellow
+        items:
+          - Fuel Pump: 'OFF'
+          - Avionics: 'OFF'
+          - Electric Trim: 'OFF'
+          - Mixture: CUT OFF
+          - Electrical Equipment: 'OFF'
+          - Battery & Alternator: 'OFF'
+          - Magnetos: 'OFF'
+          - SkyDemon: LOG ENGINE STOP
+          - Tach / Hobbs: NOTED
+            style: blue
+          - DZ Headset: TURN OFF
+          - SkyEcho: TURN OFF
+emergency:
+  - col: 1
+    sections:
+      - title: ENGINE FAILURE
+        items:
+          - ALTITUDE SUFFICIENT FOR RESTART?: null
+            style: centered_blue
+          - NO →: null
+            style: note
+          - Glide: ESTABLISH
+          - Landing Site: SELECT
+          - Mixture: CUT OFF
+          - Battery / Alternator: 'OFF'
+          - Magnetos: 'OFF'
+          - Fuel Selector: 'OFF'
+          - YES →: null
+            style: note
+          - Glide: ESTABLISH
+          - Landing Site: SELECT
+          - Electric Fuel Pump: 'ON'
+          - Mixture: FULL RICH
+          - Fuel Selector: OPPOSITE TANK
+          - Carb Heat: 'ON'
+          - Throttle: SET
+          - Primer: LOCKED
+          - Magnetos: CHECK
+          - — ENGINE RESTARTED? —: null
+            style: centered
+          - YES → Leave fuel selector on present tank: null
+            style: note
+          - YES → Land as soon as possible: null
+            style: note
+          - NO → Mayday: TRANSMIT
+            style: warn
+          - NO → Mixture: CUT OFF
+          - NO → Throttle: OPEN
+          - NO → Electric Fuel Pump: 'OFF'
+          - NO → Fuel Selector: 'OFF'
+      - title: ENGINE ROUGHNESS
+        items:
+          - Carb Heat: 'ON'
+          - (If roughness continues after 1 min): null
+            style: note
+          - Carb Heat: 'OFF'
+          - Mixture: ADJUST
+          - Electric Fuel Pump: 'ON'
+          - Fuel Selector: OPPOSITE TANK
+          - Engine Instruments: CHECK
+          - Magnetos: CHECK
+          - (If one magneto OK — continue reduced power, mixture rich, land ASAP): null
+            style: note
+      - title: CARBURETOR ICING
+        items:
+          - Carb Heat: 'ON'
+          - Mixture: ADJUST
+      - title: ENGINE FIRE — START
+        items:
+          - Starter: ENGAGE
+          - Mixture: CUT OFF
+          - Throttle: OPEN
+          - Electric Fuel Pump: 'OFF'
+          - Fuel Selector: 'OFF'
+          - EVACUATE IF FIRE CONTINUES: null
+            style: warn
+      - title: ENGINE FIRE — TAXI
+        items:
+          - Airplane: STOP
+          - Mixture: CUT OFF
+          - Fuel Selector: 'OFF'
+          - Battery / Alternator: 'OFF'
+          - EVACUATE AIRCRAFT!: null
+            style: warn
+  - col: 2
+    sections:
+      - title: ENGINE FIRE — FLIGHT
+        items:
+          - Mixture: CUT OFF
+          - Fuel Selector: 'OFF'
+          - Glide: ESTABLISH
+          - Landing Site: SELECT
+          - Mayday: TRANSMIT
+            style: warn
+          - Magnetos: 'OFF'
+          - Battery / Alternator: 'OFF'
+      - title: CABIN FIRE (FLIGHT)
+        items:
+          - Battery / Alternator: 'OFF'
+          - Electrical Equipment: 'OFF'
+          - Vents: OPEN
+      - title: ELECTRICAL FAILURE
+        items:
+          - Load Meter: VERIFY INOP
+          - (If load meter = zero): null
+            style: note
+          - Alternator: 'OFF'
+          - Reduce electrical load to minimum: null
+            style: note
+          - Circuit Breakers: CHECK & RESET
+          - Alternator: 'ON'
+          - (If power not restored): null
+            style: note
+          - Alternator: 'OFF'
+          - LAND AS SOON AS PRACTICAL: null
+            style: warn
+      - title: ELECTRICAL OVERLOAD
+        items:
+          - Alternator: 'OFF'
+          - Battery: 'ON'
+          - Reduce electrical loads to minimum: null
+            style: note
+          - LAND AS SOON AS PRACTICAL: null
+            style: warn
+      - title: LOW FUEL PRESSURE
+        items:
+          - Electric Fuel Pump: 'ON'
+          - Fuel Selector: OPPOSITE TANK
+      - title: SPIN RECOVERY
+        items:
+          - Throttle: IDLE
+          - Ailerons: NEUTRAL
+          - Rudder: OPPOSITE DIR OF ROTATION
+          - Control Wheel: FORWARD
+          - (Rudder + wheel neutral when rotation stops): null
+            style: note
+          - Pitch: LEVEL
+            style: warn
+      - title: LOSS OF OIL PRESS. / HIGH OIL TEMP.
+        items:
+          - LAND AS SOON AS PRACTICAL: null
+            style: warn
+          - (Prepare for engine loss): null
+            style: note
+      - title: FLOODED ENGINE START
+        items:
+          - Throttle: ½" OPEN
+          - Battery / Alternator: 'ON'
+          - Electric Fuel Pump: 'OFF'
+          - Mixture: CUT OFF
+          - Starter: ENGAGE
+          - Mixture (when engine fires): FULL RICH
+          - Throttle: 1000 RPM
+          - Oil Pressure: CHECK
+preflight:
+  - col: 1
+    sections:
+      - title: COCKPIT / PREFLIGHT
+        items:
+          - Parking Brakes: SET
+          - Hobbs / Tach: CHECK
+          - Battery: 'ON'
+          - Fuel Quantity: CHECK
+          - Lights / Stall Warning: CHECK
+          - Electrical Equipment: 'OFF'
+          - Battery: 'OFF'
+          - Flaps: CHECK / UP
+          - Electric Trim: CHECK OFF
+          - Trim: CHECK
+          - Pitot / Static / Drains: DRAIN / CLOSE
+          - Acft Documents (DZ): ON BOARD
+          - Pilot Documents: ON BOARD
+          - DZ Headset: TURN ON
+          - SkyEcho: CHECK ON / GREEN
+            style: blue
+          - SkyDemon: FLY
+            style: blue
+        header_color: yellow
+      - title: RIGHT WING
+        header_color: yellow
+        items:
+          - Flap Hinges: CHECK
+          - Aileron: CHECK HINGES
+          - Wingtip / Lights: CHECK
+          - Leading Edge: CLEAN
+          - Fuel Quantity: CHECK TANK
+          - Fuel Vent: CLEAR
+          - Fuel Strainer: SAMPLE
+          - LDG / Tyre: CHECK
+          - Air Inlet: CLEAR
+      - title: NOSE
+        header_color: yellow
+        items:
+          - Engine Condition: CHECK
+          - Oil Quantity: CHECK
+          - Prop & Spinner: CHECK
+          - Alternator Belt: CHECK
+          - Air Inlets: CLEAR
+          - Landing Light: CHECK
+          - Nose Gear & Tyre: CHECK
+          - Fuel Strainer: SAMPLE
+      - title: LEFT WING
+        header_color: yellow
+        items:
+          - Flap Hinges: CHECK
+          - Aileron: CHECK HINGES
+          - Wingtip / Lights: CHECK
+          - Leading Edge: CLEAN
+          - Fuel Quantity: CHECK
+          - Fuel Vent: CLEAR
+          - Fuel Strainer: SAMPLE
+          - LDG / Tyre: CHECK
+          - Air Inlet: CLEAR
+          - Pitot / Static Port: CHECK
+          - Stall Warning Horn: CHECK
+      - title: FUSELAGE & EMPENNAGE
+        header_color: yellow
+        items:
+          - Antennas: CHECK
+          - Air Inlet: CHECK
+          - Stabilator & Trim: CHECK
+          - Rudder: CHECK
+
