@@ -2,7 +2,7 @@ meta:
   callsign: "DEKPR"
   icao_type: "PA28"
   model: "Piper PA-28 Archer II"
-  revision: "Rev 2 | 2026-10"
+  revision: "Rev 3 | 2026-10-21"
   columns: 6
   font: dejavu-condensed
   scale: 1
@@ -75,6 +75,7 @@ normal:
           - Radios: SET
           - Transponder: STBY
           - Circuit Breakers: IN
+          - Fuel Qty: CHECK
           - Mixture: LEAN FOR TAXI
       - title: TAXI
         items:
